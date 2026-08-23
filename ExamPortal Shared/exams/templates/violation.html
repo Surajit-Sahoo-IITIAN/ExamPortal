@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .box {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            color: #d9534f;
+        }
+
+        p {
+            font-size: 20px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h1>{{ title }}</h1>
+
+    <p>{{ message }}</p>
+
+    {% if terminated %}
+
+        <p>
+            Your examination is now closed.
+        </p>
+
+        <a href="/logout/">Logout</a>
+
+    {% else %}
+
+        <p>
+            Please return to the examination.
+        </p>
+
+        <a href="{% url 'exam_view' exam.id %}">
+    Return to Exam
+</a>
+        </a>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

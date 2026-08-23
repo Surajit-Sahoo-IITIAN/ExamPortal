@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Instructor Dashboard</title>
+
+
+    <style>
+
+        /* ==================================================
+           GENERAL
+           ================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+
+            margin: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fa;
+
+            color: #1f2937;
+
+            padding: 30px;
+        }
+
+
+        /* ==================================================
+           MAIN CONTAINER
+           ================================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1200px;
+
+            margin: auto;
+        }
+
+
+        /* ==================================================
+           HEADER
+           ================================================== */
+
+        .header {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 28px 30px;
+
+            border: 1px solid #e1e5ea;
+
+            margin-bottom: 25px;
+        }
+
+
+        .header h1 {
+
+            margin: 0;
+
+            font-size: 30px;
+        }
+
+
+        .header p {
+
+            margin: 8px 0 0;
+
+            color: #6b7280;
+
+            font-size: 16px;
+        }
+
+
+        /* ==================================================
+           SUMMARY CARDS
+           ================================================== */
+
+        .summary-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 18px;
+
+            margin-bottom: 25px;
+        }
+
+
+        .summary-card {
+
+            background: white;
+
+            border: 1px solid #e1e5ea;
+
+            border-radius: 10px;
+
+            padding: 22px;
+
+            text-align: center;
+        }
+
+
+        .summary-value {
+
+            font-size: 30px;
+
+            font-weight: bold;
+
+            color: #1f2937;
+        }
+
+
+        .summary-label {
+
+            margin-top: 7px;
+
+            color: #6b7280;
+
+            font-size: 14px;
+        }
+
+
+        /* ==================================================
+           EXAM SECTION
+           ================================================== */
+
+        .exam-section {
+
+            background: white;
+
+            border: 1px solid #e1e5ea;
+
+            border-radius: 12px;
+
+            padding: 25px;
+        }
+
+
+        .exam-section h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* ==================================================
+           EXAM CARD
+           ================================================== */
+
+        .exam-card {
+
+            border: 1px solid #dfe3e8;
+
+            border-radius: 10px;
+
+            padding: 22px;
+
+            margin-bottom: 18px;
+
+            background: #fff;
+        }
+
+
+        .exam-card:last-child {
+
+            margin-bottom: 0;
+        }
+
+
+        /* ==================================================
+           EXAM HEADER
+           ================================================== */
+
+        .exam-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: flex-start;
+
+            gap: 20px;
+        }
+
+
+        .exam-title {
+
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+
+        .exam-description {
+
+            margin-top: 8px;
+
+            color: #6b7280;
+
+            line-height: 1.5;
+        }
+
+
+        /* ==================================================
+           STATUS
+           ================================================== */
+
+        .status {
+
+            display: inline-block;
+
+            padding: 6px 12px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+
+            white-space: nowrap;
+        }
+
+
+        .status-upcoming {
+
+            background: #fff3cd;
+
+            color: #856404;
+        }
+
+
+        .status-active {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+        }
+
+
+        .status-completed {
+
+            background: #e2e3e5;
+
+            color: #41464b;
+        }
+
+
+        /* ==================================================
+           EXAM INFORMATION
+           ================================================== */
+
+        .exam-meta {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 12px;
+
+            margin-top: 20px;
+        }
+
+
+        .meta-box {
+
+            background: #f8f9fa;
+
+            border-radius: 7px;
+
+            padding: 13px;
+
+            text-align: center;
+        }
+
+
+        .meta-value {
+
+            font-size: 18px;
+
+            font-weight: bold;
+        }
+
+
+        .meta-label {
+
+            margin-top: 4px;
+
+            font-size: 12px;
+
+            color: #6b7280;
+        }
+
+
+        /* ==================================================
+           SECURITY SECTION
+           ================================================== */
+
+        .security-section {
+
+            margin-top: 22px;
+
+            padding-top: 20px;
+
+            border-top: 1px solid #e5e7eb;
+        }
+
+
+        .security-title {
+
+            font-size: 17px;
+
+            font-weight: bold;
+
+            margin-bottom: 13px;
+
+            color: #1f2937;
+        }
+
+
+        .security-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap: 12px;
+        }
+
+
+        .security-box {
+
+            background: #f8f9fa;
+
+            border: 1px solid #e5e7eb;
+
+            border-radius: 7px;
+
+            padding: 13px;
+
+            text-align: center;
+        }
+
+
+        .security-value {
+
+            font-size: 18px;
+
+            font-weight: bold;
+
+            color: #1f2937;
+        }
+
+
+        .security-label {
+
+            margin-top: 5px;
+
+            font-size: 12px;
+
+            color: #6b7280;
+
+            line-height: 1.3;
+        }
+
+
+        /* ==================================================
+           SECURITY STATUS COLORS
+           ================================================== */
+
+        .security-normal {
+
+            color: #198754;
+        }
+
+
+        .security-warning {
+
+            color: #d97706;
+        }
+
+
+        .security-danger {
+
+            color: #dc3545;
+        }
+
+
+        /* ==================================================
+           ACTIONS
+           ================================================== */
+
+        .actions {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 20px;
+
+            flex-wrap: wrap;
+        }
+
+
+        .button {
+
+            display: inline-block;
+
+            padding: 9px 16px;
+
+            border-radius: 6px;
+
+            text-decoration: none;
+
+            font-size: 14px;
+
+            font-weight: bold;
+        }
+
+
+        .button-primary {
+
+            background: #1976d2;
+
+            color: white;
+        }
+
+
+        .button-primary:hover {
+
+            background: #125ca1;
+        }
+
+
+        .button-secondary {
+
+            background: #f1f3f5;
+
+            color: #343a40;
+
+            border: 1px solid #d6d9dc;
+        }
+
+
+        .button-secondary:hover {
+
+            background: #e5e7eb;
+        }
+
+
+        /* ==================================================
+           EMPTY STATE
+           ================================================== */
+
+        .empty {
+
+            text-align: center;
+
+            padding: 50px 20px;
+
+            color: #6b7280;
+        }
+
+
+        .empty h3 {
+
+            color: #374151;
+
+            margin-bottom: 8px;
+        }
+
+
+        /* ==================================================
+           WATERMARK / FOOTER
+           ================================================== */
+
+        .watermark {
+
+            text-align: center;
+
+            margin-top: 30px;
+
+            padding-top: 18px;
+
+            border-top: 1px solid #ddd;
+
+            font-size: 13px;
+
+            color: rgba(80, 80, 80, 0.55);
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 1100px) {
+
+            .security-grid {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 1000px) {
+
+            .summary-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .exam-meta {
+
+                grid-template-columns:
+                    repeat(3, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 750px) {
+
+            .security-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            body {
+
+                padding: 12px;
+            }
+
+
+            .container {
+
+                width: 100%;
+            }
+
+
+            .header {
+
+                padding: 22px;
+            }
+
+
+            .header h1 {
+
+                font-size: 25px;
+            }
+
+
+            .summary-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .exam-meta {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+
+            .exam-header {
+
+                flex-direction: column;
+            }
+
+
+            .exam-title {
+
+                font-size: 19px;
+            }
+
+
+            .security-grid {
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 420px) {
+
+            .exam-meta {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .security-grid {
+
+                grid-template-columns: 1fr;
+            }
+
+
+            .actions {
+
+                flex-direction: column;
+            }
+
+
+            .button {
+
+                text-align: center;
+
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <div class="header">
+
+        <h1>
+            Instructor Dashboard
+        </h1>
+
+        <p>
+            Manage examinations, monitor student performance,
+            and access detailed examination analytics.
+        </p>
+
+    </div>
+
+
+    <!-- ==================================================
+         SUMMARY
+         ================================================== -->
+
+    <div class="summary-grid">
+
+
+        <!-- TOTAL EXAMS -->
+
+        <div class="summary-card">
+
+            <div class="summary-value">
+
+                {{ total_exams }}
+
+            </div>
+
+            <div class="summary-label">
+
+                Total Examinations
+
+            </div>
+
+        </div>
+
+
+        <!-- ACTIVE EXAMS -->
+
+        <div class="summary-card">
+
+            <div class="summary-value">
+
+                {{ active_count }}
+
+            </div>
+
+            <div class="summary-label">
+
+                Active Examinations
+
+            </div>
+
+        </div>
+
+
+        <!-- UPCOMING EXAMS -->
+
+        <div class="summary-card">
+
+            <div class="summary-value">
+
+                {{ upcoming_count }}
+
+            </div>
+
+            <div class="summary-label">
+
+                Upcoming
+
+            </div>
+
+        </div>
+
+
+        <!-- COMPLETED EXAMS -->
+
+        <div class="summary-card">
+
+            <div class="summary-value">
+
+                {{ completed_count }}
+
+            </div>
+
+            <div class="summary-label">
+
+                Completed
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ==================================================
+         EXAMINATIONS
+         ================================================== -->
+
+    <div class="exam-section">
+
+
+        <h2>
+            My Examinations
+        </h2>
+
+
+        {% if dashboard_exams %}
+
+
+            <!-- ==========================================
+                 EXAM LOOP
+                 ========================================== -->
+
+            {% for item in dashboard_exams %}
+
+
+                <div class="exam-card">
+
+
+                    <!-- ==================================
+                         EXAM HEADER
+                         ================================== -->
+
+                    <div class="exam-header">
+
+
+                        <div>
+
+                            <h3 class="exam-title">
+
+                                {{ item.exam.title }}
+
+                            </h3>
+
+
+                            {% if item.exam.description %}
+
+                                <div class="exam-description">
+
+                                    {{ item.exam.description }}
+
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <!-- ==============================
+                             STATUS
+                             ============================== -->
+
+                        {% if item.status == "UPCOMING" %}
+
+                            <span class="status status-upcoming">
+
+                                Upcoming
+
+                            </span>
+
+
+                        {% elif item.status == "ACTIVE" %}
+
+                            <span class="status status-active">
+
+                                Active
+
+                            </span>
+
+
+                        {% elif item.status == "COMPLETED" %}
+
+                            <span class="status status-completed">
+
+                                Completed
+
+                            </span>
+
+                        {% endif %}
+
+
+                    </div>
+
+
+                    <!-- ==================================
+                         EXAM INFORMATION
+                         ================================== -->
+
+                    <div class="exam-meta">
+
+
+                        <!-- TOTAL MARKS -->
+
+                        <div class="meta-box">
+
+                            <div class="meta-value">
+
+                                {{ item.exam.total_marks }}
+
+                            </div>
+
+                            <div class="meta-label">
+
+                                Total Marks
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- DURATION -->
+
+                        <div class="meta-box">
+
+                            <div class="meta-value">
+
+                                {{ item.exam.duration }}
+
+                            </div>
+
+                            <div class="meta-label">
+
+                                Duration (min)
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- STUDENTS -->
+
+                        <div class="meta-box">
+
+                            <div class="meta-value">
+
+                                {{ item.student_count }}
+
+                            </div>
+
+                            <div class="meta-label">
+
+                                Students Submitted
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- AVERAGE -->
+
+                        <div class="meta-box">
+
+                            <div class="meta-value">
+
+                                {{ item.average_score }}
+
+                                / {{ item.exam.total_marks }}
+
+                            </div>
+
+                            <div class="meta-label">
+
+                                Average Score
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- HIGHEST -->
+
+                        <div class="meta-box">
+
+                            <div class="meta-value">
+
+                                {{ item.highest_score }}
+
+                                / {{ item.exam.total_marks }}
+
+                            </div>
+
+                            <div class="meta-label">
+
+                                Highest Score
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ==================================
+                         SECURITY & MONITORING
+                         ================================== -->
+
+                    <div class="security-section">
+
+
+                        <div class="security-title">
+
+                            Security &amp; Monitoring
+
+                        </div>
+
+
+                        <div class="security-grid">
+
+
+                            <!-- TOTAL ATTEMPTS -->
+
+                            <div class="security-box">
+
+                                <div class="security-value">
+
+                                    {{ item.total_attempts }}
+
+                                </div>
+
+                                <div class="security-label">
+
+                                    Total Attempts
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- NORMAL SUBMISSIONS -->
+
+                            <div class="security-box">
+
+                                <div class="security-value security-normal">
+
+                                    {{ item.normal_submissions }}
+
+                                </div>
+
+                                <div class="security-label">
+
+                                    Normal Submissions
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- AUTO SUBMISSIONS -->
+
+                            <div class="security-box">
+
+                                <div class="security-value">
+
+                                    {{ item.auto_submissions }}
+
+                                </div>
+
+                                <div class="security-label">
+
+                                    Auto Submissions
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- TERMINATED ATTEMPTS -->
+
+                            <div class="security-box">
+
+                                <div class="security-value security-danger">
+
+                                    {{ item.terminated_attempts }}
+
+                                </div>
+
+                                <div class="security-label">
+
+                                    Terminated Attempts
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- VIOLATIONS -->
+
+                            <div class="security-box">
+
+                                <div
+                                    class="
+                                        security-value
+                                        {% if item.total_violations > 0 %}
+                                            security-warning
+                                        {% else %}
+                                            security-normal
+                                        {% endif %}
+                                    "
+                                >
+
+                                    {{ item.total_violations }}
+
+                                </div>
+
+                                <div class="security-label">
+
+                                    Violations Recorded
+
+                                </div>
+
+                            </div>
+
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- ==================================
+                         ACTION BUTTONS
+                         ================================== -->
+
+                    <div class="actions">
+
+
+                        <!-- VIEW EXAM -->
+
+                        <a
+                            href="{% url 'exam_view' item.exam.id %}"
+                            class="button button-secondary"
+                        >
+
+                            View Exam
+
+                        </a>
+
+
+                        <!-- ANALYTICS -->
+
+                        <a
+                            href="{% url 'exam_analytics' item.exam.id %}"
+                            class="button button-primary"
+                        >
+
+                            View Analytics
+
+                        </a>
+
+
+                        <!-- EDIT EXAM -->
+
+                        <a
+                            href="/admin/exams/exam/{{ item.exam.id }}/change/"
+                            class="button button-secondary"
+                        >
+
+                            Edit Exam
+
+                        </a>
+
+
+                    </div>
+
+
+                </div>
+
+
+            {% endfor %}
+
+
+        {% else %}
+
+
+            <!-- ==========================================
+                 NO EXAMS
+                 ========================================== -->
+
+            <div class="empty">
+
+
+                <h3>
+
+                    No examinations found
+
+                </h3>
+
+
+                <p>
+
+                    Create an examination from the
+                    administration panel to get started.
+
+                </p>
+
+
+                <br>
+
+
+                <a
+                    href="/admin/exams/exam/add/"
+                    class="button button-primary"
+                >
+
+                    Create Examination
+
+                </a>
+
+
+            </div>
+
+
+        {% endif %}
+
+
+    </div>
+
+
+    <!-- ==================================================
+         FOOTER
+         ================================================== -->
+
+    <div class="watermark">
+
+        Prepared &amp; Authorized by • Surajit Sahoo
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>

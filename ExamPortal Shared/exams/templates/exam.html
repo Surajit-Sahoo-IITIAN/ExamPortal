@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>{{ exam.title }}</title>
+
+    <!-- ==========================================
+         MATHJAX
+         ========================================== -->
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+
+
+<body>
+
+<h1>{{ exam.title }}</h1>
+
+<p>
+    {{ exam.description }}
+</p>
+
+
+<!-- ==========================================
+     ADMIN PREVIEW
+     ========================================== -->
+
+{% if is_admin %}
+
+    <h2 style="color:blue;">
+        Preview Mode (Administrator)
+    </h2>
+
+    <p>
+
+        <strong>Exam Window:</strong>
+        <br>
+
+        {{ exam.start_time|date:"d M Y, h:i A" }}
+
+        to
+
+        {{ exam.end_time|date:"d M Y, h:i A" }}
+
+    </p>
+
+
+{% else %}
+
+    <!-- ==========================================
+         STUDENT EXAM
+         ========================================== -->
+
+    <h2 id="timer">
+        Loading timer...
+    </h2>
+
+{% endif %}
+
+
+<!-- ==========================================
+     EXAM FORM
+     ========================================== -->
+
+<form
+    method="POST"
+    enctype="multipart/form-data"
+>
+
+    {% csrf_token %}
+
+
+    {% for question in questions %}
+
+        <hr>
+
+
+        <h3>
+            Question {{ forloop.counter }}
+        </h3>
+
+
+        <!-- ==========================================
+             QUESTION TEXT
+             ========================================== -->
+
+        <p>
+            {{ question.question_text|safe }}
+        </p>
+
+
+        <!-- ==========================================
+             QUESTION IMAGE
+             ========================================== -->
+
+        {% if question.question_image %}
+
+            <img
+                src="{{ question.question_image.url }}"
+                width="300"
+            >
+
+        {% endif %}
+
+
+        <!-- ==========================================
+             MCQ
+             SINGLE CORRECT
+             ========================================== -->
+
+        {% if question.question_type == "MCQ" %}
+
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="1"
+            >
+
+            {{ question.option1 }}
+
+            <br>
+
+
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="2"
+            >
+
+            {{ question.option2 }}
+
+            <br>
+
+
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="3"
+            >
+
+            {{ question.option3 }}
+
+            <br>
+
+
+            <input
+                type="radio"
+                name="question_{{ question.id }}"
+                value="4"
+            >
+
+            {{ question.option4 }}
+
+            <br>
+
+
+        <!-- ==========================================
+             MULTI
+             MULTIPLE CORRECT
+             ========================================== -->
+
+        {% elif question.question_type == "MULTI" %}
+
+            <p>
+                <strong>
+                    Select all correct options.
+                </strong>
+            </p>
+
+
+            <input
+                type="checkbox"
+                name="question_{{ question.id }}"
+                value="1"
+            >
+
+            {{ question.option1 }}
+
+            <br>
+
+
+            <input
+                type="checkbox"
+                name="question_{{ question.id }}"
+                value="2"
+            >
+
+            {{ question.option2 }}
+
+            <br>
+
+
+            <input
+                type="checkbox"
+                name="question_{{ question.id }}"
+                value="3"
+            >
+
+            {{ question.option3 }}
+
+            <br>
+
+
+            <input
+                type="checkbox"
+                name="question_{{ question.id }}"
+                value="4"
+            >
+
+            {{ question.option4 }}
+
+            <br>
+
+
+        <!-- ==========================================
+             NUMERICAL
+             ========================================== -->
+
+        {% elif question.question_type == "NUM" %}
+
+            <input
+                type="text"
+                name="question_{{ question.id }}"
+            >
+
+
+        <!-- ==========================================
+             SHORT ANSWER
+             ========================================== -->
+
+        {% elif question.question_type == "SHORT" %}
+
+            <textarea
+                name="question_{{ question.id }}"
+                rows="4"
+                cols="50"
+            ></textarea>
+
+
+        <!-- ==========================================
+             LONG ANSWER
+             ========================================== -->
+
+        {% elif question.question_type == "LONG" %}
+
+            <textarea
+                name="question_{{ question.id }}"
+                rows="8"
+                cols="80"
+            ></textarea>
+
+
+        <!-- ==========================================
+             FILE UPLOAD
+             ========================================== -->
+
+        {% elif question.question_type == "UPLOAD" %}
+
+            <input
+                type="file"
+                name="question_{{ question.id }}"
+            >
+
+        {% endif %}
+
+
+    {% endfor %}
+
+
+    <br>
+    <br>
+
+
+    <!-- ==========================================
+         SUBMIT BUTTON
+         ========================================== -->
+
+    <button type="submit">
+
+        Submit Exam
+
+    </button>
+
+
+</form>
+
+
+<!-- ==========================================
+     STUDENT TIMER + SECURITY
+     ========================================== -->
+
+{% if not is_admin %}
+
+<script>
+
+
+    /* =================================================
+       EXAM TIMER
+       ================================================= */
+
+    const examEndTime =
+        new Date("{{ exam_end_time }}");
+
+
+    function startTimer() {
+
+        const timer =
+            document.getElementById("timer");
+
+
+        const countdown =
+            setInterval(function () {
+
+
+                const now =
+                    new Date();
+
+
+                let remaining =
+                    Math.floor(
+                        (examEndTime - now) / 1000
+                    );
+
+
+                /* =====================================
+                   TIME OVER
+                   ===================================== */
+
+                if (remaining <= 0) {
+
+                    clearInterval(countdown);
+
+
+                    timer.innerHTML =
+                        "Time Left: 00:00";
+
+
+                    alert(
+                        "Time is over! Exam will now be submitted."
+                    );
+
+
+                    document
+                        .querySelector("form")
+                        .submit();
+
+
+                    return;
+
+                }
+
+
+                /* =====================================
+                   HOURS
+                   ===================================== */
+
+                const hours =
+                    Math.floor(
+                        remaining / 3600
+                    );
+
+
+                remaining %= 3600;
+
+
+                /* =====================================
+                   MINUTES
+                   ===================================== */
+
+                const minutes =
+                    Math.floor(
+                        remaining / 60
+                    );
+
+
+                /* =====================================
+                   SECONDS
+                   ===================================== */
+
+                const seconds =
+                    remaining % 60;
+
+
+                /* =====================================
+                   DISPLAY TIMER
+                   ===================================== */
+
+                if (hours > 0) {
+
+                    timer.innerHTML =
+                        `Time Left: ${hours}:` +
+                        `${String(minutes).padStart(2, '0')}:` +
+                        `${String(seconds).padStart(2, '0')}`;
+
+                }
+
+                else {
+
+                    timer.innerHTML =
+                        `Time Left: ${minutes}:` +
+                        `${String(seconds).padStart(2, '0')}`;
+
+                }
+
+
+            }, 1000);
+
+    }
+
+
+    startTimer();
+
+
+    /* =================================================
+       TAB / WINDOW VIOLATION DETECTION
+       ================================================= */
+
+    let violationBeingProcessed = false;
+
+
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+
+            /*
+             * When the student leaves the exam page,
+             * document.hidden becomes true.
+             */
+
+            if (
+                document.hidden &&
+                !violationBeingProcessed
+            ) {
+
+                violationBeingProcessed = true;
+
+                recordViolation();
+
+            }
+
+        }
+    );
+
+
+    /* =================================================
+       RECORD VIOLATION ON SERVER
+       ================================================= */
+
+    function recordViolation() {
+
+
+        const csrfToken =
+            document.querySelector(
+                '[name=csrfmiddlewaretoken]'
+            ).value;
+
+
+        fetch(
+            "{% url 'exam_violation' exam.id %}",
+            {
+
+                method: "POST",
+
+                headers: {
+
+                    "X-CSRFToken":
+                        csrfToken,
+
+                    "Content-Type":
+                        "application/json"
+
+                },
+
+                credentials:
+                    "same-origin",
+
+                keepalive:
+                    true
+
+            }
+        )
+
+
+        .then(
+            function(response) {
+
+                return response.text();
+
+            }
+        )
+
+
+        .then(
+            function(html) {
+
+
+                /*
+                 * Django has returned either:
+                 *
+                 * 1. First-warning page
+                 * OR
+                 * 2. Termination page
+                 */
+
+                document.open();
+
+                document.write(html);
+
+                document.close();
+
+            }
+        )
+
+
+        .catch(
+            function(error) {
+
+
+                console.error(
+                    "Violation recording failed:",
+                    error
+                );
+
+
+                /*
+                 * Allow another attempt if the request
+                 * failed temporarily.
+                 */
+
+                violationBeingProcessed = false;
+
+            }
+        );
+
+    }
+
+</script>
+
+{% endif %}
+
+
+</body>
+
+</html>

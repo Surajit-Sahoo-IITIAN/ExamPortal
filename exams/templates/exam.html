@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }} - Assessment Portal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <!-- MathJax -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Sticky Navigation Bar */
+        .exam-navbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .navbar-container {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .exam-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 0;
+        }
+
+        .exam-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .exam-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .exam-title-group h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .exam-meta-badges {
+            display: flex;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .badge-primary {
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+
+        .badge-neutral {
+            background: #f1f5f9;
+            color: var(--text-muted);
+        }
+
+        .badge-admin {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
+
+        /* Timer Widget */
+        .timer-widget {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0f172a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+        }
+
+        .timer-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #38bdf8;
+        }
+
+        .timer-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .timer-content {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .timer-label {
+            font-size: 10.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .timer-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 19px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 1px;
+        }
+
+        .timer-widget.warning {
+            background: #78350f;
+            border: 1px solid #b45309;
+        }
+
+        .timer-widget.danger {
+            background: #7f1d1d;
+            border: 1px solid #dc2626;
+            animation: pulse-danger 1.5s infinite;
+        }
+
+        @keyframes pulse-danger {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+        }
+
+        /* Main Container Layout */
+        .main-wrapper {
+            max-width: 1380px;
+            margin: 24px auto;
+            padding: 0 24px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            gap: 28px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .main-wrapper {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Questions Stream */
+        .questions-stream {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+        }
+
+        .question-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-md);
+        }
+
+        .question-card.active-target {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .question-number-badge {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .question-badges {
+            display: flex;
+            gap: 8px;
+        }
+
+        .badge-type {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 11.5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .badge-marks {
+            background: #f0fdf4;
+            color: #166534;
+            font-size: 11.5px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .question-body {
+            font-size: 16px;
+            line-height: 1.65;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .question-image-container {
+            margin: 16px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            max-width: 100%;
+            background: #f8fafc;
+            display: inline-block;
+        }
+
+        .question-image-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Options Grid / List */
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            background: #ffffff;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .option-label:hover {
+            background: #f8fafc;
+            border-color: #94a3b8;
+        }
+
+        .option-input {
+            margin-top: 3px;
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option-label.checked {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 1px var(--primary);
+        }
+
+        .option-letter {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            background: #f1f5f9;
+            color: #475569;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12.5px;
+            font-weight: 700;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .option-label.checked .option-letter {
+            background: var(--primary);
+            color: white;
+        }
+
+        .option-content {
+            font-size: 15px;
+            color: var(--text-main);
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .option-img {
+            margin-top: 10px;
+            max-width: 320px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+
+        /* Non-MCQ Inputs */
+        .text-input-field {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 15px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: white;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .text-input-field:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .file-upload-box {
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            background: #f8fafc;
+            transition: border-color 0.2s ease;
+        }
+
+        .file-upload-box:hover {
+            border-color: var(--primary);
+        }
+
+        .clear-answer-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s ease;
+        }
+
+        .clear-answer-btn:hover {
+            color: var(--danger);
+        }
+
+        /* Palette Sticky Sidebar */
+        .palette-sidebar {
+            position: sticky;
+            top: 84px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .palette-header {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .palette-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12.5px;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .stat-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-answered {
+            background: var(--success);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+
+        .dot-unanswered {
+            background: #cbd5e1;
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+            margin-bottom: 22px;
+        }
+
+        .palette-btn {
+            aspect-ratio: 1;
+            background: #f8fafc;
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            color: #475569;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .palette-btn:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        .palette-btn.answered {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+        }
+
+        .palette-btn.current {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+
+        /* Submit Button */
+        .btn-submit-exam {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit-exam:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: white;
+            border-radius: 20px;
+            max-width: 460px;
+            width: 100%;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+            text-align: center;
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #eff6ff;
+            color: var(--primary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .modal-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .modal-text {
+            font-size: 14.5px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-modal-cancel {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            background: white;
+            color: #475569;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+        }
+
+        .btn-modal-confirm {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14.5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="exam-navbar">
+    <div class="navbar-container">
+        <div class="exam-info">
+            <div class="exam-icon">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <div class="exam-title-group">
+                <h1>{{ exam.title }}</h1>
+                <div class="exam-meta-badges">
+                    <span class="badge badge-primary">{{ questions|length }} Questions</span>
+                    <span class="badge badge-neutral">Total Marks: {{ exam.total_marks }}</span>
+                    {% if is_admin %}
+                        <span class="badge badge-admin">Preview Mode</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        {% if is_admin %}
+            <div class="timer-widget" style="background: #312e81;">
+                <div class="timer-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </div>
+                <div class="timer-content">
+                    <span class="timer-label">Administrator</span>
+                    <span class="timer-display" style="font-size: 14px;">Preview Mode</span>
+                </div>
+            </div>
+        {% else %}
+            <div class="timer-widget" id="timer-box">
+                <div class="timer-icon">
+                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div class="timer-content">
+                    <span class="timer-label">Time Remaining</span>
+                    <span class="timer-display" id="timer">--:--</span>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</header>
+
+<!-- Main Exam Interface -->
+<main class="main-wrapper">
+    <form method="POST" enctype="multipart/form-data" id="examForm" class="questions-stream">
+        {% csrf_token %}
+
+        {% if exam.description %}
+            <div style="background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid var(--border); font-size: 14.5px; color: var(--text-muted);">
+                <strong style="color: var(--text-main);">Instructions:</strong> {{ exam.description }}
+            </div>
+        {% endif %}
+
+        {% for question in questions %}
+            <article class="question-card" id="q-card-{{ question.id }}" data-qid="{{ question.id }}">
+                <div class="question-header">
+                    <div class="question-number-badge">
+                        <span>Question {{ forloop.counter }}</span>
+                    </div>
+                    <div class="question-badges">
+                        <span class="badge-type">
+                            {% if question.question_type == "MCQ" %}Single Choice
+                            {% elif question.question_type == "MULTI" %}Multiple Correct
+                            {% elif question.question_type == "NUM" %}Numerical
+                            {% elif question.question_type == "SHORT" %}Short Answer
+                            {% elif question.question_type == "LONG" %}Long Answer
+                            {% elif question.question_type == "UPLOAD" %}File Upload
+                            {% else %}{{ question.question_type }}{% endif %}
+                        </span>
+                        <span class="badge-marks">+{{ question.marks }} Mark{% if question.marks > 1 %}s{% endif %}</span>
+                    </div>
+                </div>
+
+                <div class="question-body">
+                    {{ question.question_text|safe }}
+                </div>
+
+                {% if question.question_image %}
+                    <div class="question-image-container">
+                        <img src="{{ question.question_image.url }}" alt="Question Image">
+                    </div>
+                {% endif %}
+
+                <!-- Options Render -->
+                {% if question.question_type == "MCQ" %}
+                    <div class="options-list">
+                        {% if question.option1 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-1">
+                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="1" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">A</span>
+                                <div class="option-content">
+                                    {{ question.option1 }}
+                                    {% if question.option1_image %}
+                                        <img src="{{ question.option1_image.url }}" class="option-img" alt="Option A Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option2 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-2">
+                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="2" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">B</span>
+                                <div class="option-content">
+                                    {{ question.option2 }}
+                                    {% if question.option2_image %}
+                                        <img src="{{ question.option2_image.url }}" class="option-img" alt="Option B Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option3 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-3">
+                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="3" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">C</span>
+                                <div class="option-content">
+                                    {{ question.option3 }}
+                                    {% if question.option3_image %}
+                                        <img src="{{ question.option3_image.url }}" class="option-img" alt="Option C Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option4 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-4">
+                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="4" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">D</span>
+                                <div class="option-content">
+                                    {{ question.option4 }}
+                                    {% if question.option4_image %}
+                                        <img src="{{ question.option4_image.url }}" class="option-img" alt="Option D Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="clear-answer-btn" onclick="clearSelection('question_{{ question.id }}', {{ question.id }})">
+                        <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Clear response
+                    </button>
+
+                {% elif question.question_type == "MULTI" %}
+                    <div class="options-list">
+                        {% if question.option1 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-1">
+                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="1" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">A</span>
+                                <div class="option-content">
+                                    {{ question.option1 }}
+                                    {% if question.option1_image %}
+                                        <img src="{{ question.option1_image.url }}" class="option-img" alt="Option A Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option2 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-2">
+                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="2" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">B</span>
+                                <div class="option-content">
+                                    {{ question.option2 }}
+                                    {% if question.option2_image %}
+                                        <img src="{{ question.option2_image.url }}" class="option-img" alt="Option B Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option3 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-3">
+                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="3" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">C</span>
+                                <div class="option-content">
+                                    {{ question.option3 }}
+                                    {% if question.option3_image %}
+                                        <img src="{{ question.option3_image.url }}" class="option-img" alt="Option C Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+
+                        {% if question.option4 %}
+                            <label class="option-label" id="opt-label-{{ question.id }}-4">
+                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="4" onchange="handleOptionChange({{ question.id }})">
+                                <span class="option-letter">D</span>
+                                <div class="option-content">
+                                    {{ question.option4 }}
+                                    {% if question.option4_image %}
+                                        <img src="{{ question.option4_image.url }}" class="option-img" alt="Option D Image">
+                                    {% endif %}
+                                </div>
+                            </label>
+                        {% endif %}
+                    </div>
+                    <button type="button" class="clear-answer-btn" onclick="clearSelection('question_{{ question.id }}', {{ question.id }})">
+                        <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        Clear responses
+                    </button>
+
+                {% elif question.question_type == "NUM" %}
+                    <div style="margin-top: 14px;">
+                        <input type="text" name="question_{{ question.id }}" class="text-input-field" placeholder="Enter numerical answer" oninput="handleOptionChange({{ question.id }})">
+                    </div>
+
+                {% elif question.question_type == "SHORT" %}
+                    <div style="margin-top: 14px;">
+                        <input type="text" name="question_{{ question.id }}" class="text-input-field" placeholder="Type your short answer here" oninput="handleOptionChange({{ question.id }})">
+                    </div>
+
+                {% elif question.question_type == "LONG" %}
+                    <div style="margin-top: 14px;">
+                        <textarea name="question_{{ question.id }}" class="text-input-field" rows="5" placeholder="Type your detailed response here..." oninput="handleOptionChange({{ question.id }})"></textarea>
+                    </div>
+
+                {% elif question.question_type == "UPLOAD" %}
+                    <div class="file-upload-box" style="margin-top: 14px;">
+                        <input type="file" name="question_{{ question.id }}" onchange="handleOptionChange({{ question.id }})">
+                    </div>
+                {% endif %}
+            </article>
+        {% endfor %}
+    </form>
+
+    <!-- Side Question Palette -->
+    <aside class="palette-sidebar">
+        <div class="palette-header">
+            <span>Question Palette</span>
+            <span id="answeredCounter" style="font-size: 13px; font-weight: 600; color: var(--primary);">0 / {{ questions|length }}</span>
+        </div>
+
+        <div class="palette-stats">
+            <div class="stat-badge">
+                <div class="stat-dot dot-answered"></div>
+                <span>Answered</span>
+            </div>
+            <div class="stat-badge">
+                <div class="stat-dot dot-unanswered"></div>
+                <span>Not Answered</span>
+            </div>
+        </div>
+
+        <div class="palette-grid">
+            {% for question in questions %}
+                <button type="button" class="palette-btn" id="pbtn-{{ question.id }}" onclick="scrollToQuestion({{ question.id }})">
+                    {{ forloop.counter }}
+                </button>
+            {% endfor %}
+        </div>
+
+        {% if not is_admin %}
+            <button type="button" class="btn-submit-exam" onclick="openSubmitModal()">
+                <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+                Submit Exam
+            </button>
+        {% endif %}
+    </aside>
+</main>
+
+<!-- Submit Confirmation Modal -->
+<div class="modal-overlay" id="submitModal">
+    <div class="modal-card">
+        <div class="modal-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+        </div>
+        <h3 class="modal-title">Ready to Submit?</h3>
+        <p class="modal-text" id="modalStatsText">You have answered all questions. Once submitted, your answers cannot be altered.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn-modal-cancel" onclick="closeSubmitModal()">Review Questions</button>
+            <button type="button" class="btn-modal-confirm" onclick="confirmSubmit()">Confirm & Submit</button>
+        </div>
+    </div>
+</div>
+
+{% if not is_admin %}
+<script>
+    /* Timer Engine */
+    const examEndTimeStr = "{{ exam_end_time }}";
+    const durationMinutes = {{ exam.duration }};
+    const examId = {{ exam.id }};
+    const timerElem = document.getElementById("timer");
+    const timerBox = document.getElementById("timer-box");
+
+    function getTargetTime() {
+        if (examEndTimeStr) {
+            return new Date(examEndTimeStr).getTime();
+        }
+        const storageKey = `exam_target_${examId}`;
+        let savedTarget = localStorage.getItem(storageKey);
+        if (!savedTarget) {
+            savedTarget = Date.now() + (durationMinutes * 60 * 1000);
+            localStorage.setItem(storageKey, savedTarget);
+        }
+        return parseInt(savedTarget, 10);
+    }
+
+    const targetTime = getTargetTime();
+
+    function updateTimer() {
+        const now = Date.now();
+        let diffSec = Math.floor((targetTime - now) / 1000);
+
+        if (diffSec <= 0) {
+            timerElem.innerText = "00:00";
+            document.getElementById("examForm").submit();
+            return;
+        }
+
+        const hours = Math.floor(diffSec / 3600);
+        const mins = Math.floor((diffSec % 3600) / 60);
+        const secs = diffSec % 60;
+
+        if (diffSec < 180) { // < 3 mins
+            timerBox.className = "timer-widget danger";
+        } else if (diffSec < 600) { // < 10 mins
+            timerBox.className = "timer-widget warning";
+        }
+
+        if (hours > 0) {
+            timerElem.innerText = `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        } else {
+            timerElem.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+    }
+
+    setInterval(updateTimer, 1000);
+    updateTimer();
+
+    /* ========================================================
+       ANTI-CHEAT: Tab Switch Detection (Hardened)
+       ======================================================== */
+    let violationInProgress = false;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden && !violationInProgress) {
+            violationInProgress = true;
+
+            fetch("{% url 'exam_violation' exam.id %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                },
+                credentials: "same-origin",
+                keepalive: true
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.action === 'warning') {
+                    /* 1st violation: show warning modal */
+                    showViolationWarning(data.message);
+                    violationInProgress = false;  /* Allow detecting next violation */
+                } else if (data.action === 'terminated') {
+                    /* 2nd+ violation: auto-submit exam immediately */
+                    showTerminationAndRedirect(data.message);
+                } else {
+                    violationInProgress = false;
+                }
+            })
+            .catch(err => {
+                console.error("Violation error:", err);
+                violationInProgress = false;
+            });
+        }
+    });
+
+    /* Violation Warning Modal (1st offense) */
+    function showViolationWarning(message) {
+        /* Reuse the existing modal overlay */
+        const modal = document.getElementById("submitModal");
+        const card = modal.querySelector(".modal-card");
+
+        card.innerHTML = `
+            <div class="modal-icon" style="background: #fffbeb; color: #f59e0b;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h3 class="modal-title" style="color: #b45309;">⚠ Warning — Violation Detected</h3>
+            <p class="modal-text" style="color: #92400e; font-weight: 500;">${message}</p>
+            <div class="modal-actions">
+                <button type="button" class="btn-modal-confirm" style="background: linear-gradient(135deg, #f59e0b, #d97706);"
+                    onclick="document.getElementById('submitModal').style.display='none'; restoreModalContent();">
+                    I Understand — Return to Exam
+                </button>
+            </div>
+        `;
+        modal.style.display = "flex";
+    }
+
+    /* Termination screen (2nd offense) — redirect to login */
+    function showTerminationAndRedirect(message) {
+        const modal = document.getElementById("submitModal");
+        const card = modal.querySelector(".modal-card");
+
+        card.innerHTML = `
+            <div class="modal-icon" style="background: #fef2f2; color: #ef4444;">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                </svg>
+            </div>
+            <h3 class="modal-title" style="color: #dc2626;">Examination Terminated</h3>
+            <p class="modal-text" style="color: #991b1b; font-weight: 500;">${message}</p>
+            <div class="modal-actions">
+                <a href="{% url 'logout' %}" class="btn-modal-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626); text-decoration: none; text-align: center;">
+                    Acknowledge & Logout
+                </a>
+            </div>
+        `;
+        modal.style.display = "flex";
+    }
+
+    /* Saved original modal HTML for restoration after warning */
+    const originalModalHTML = document.getElementById("submitModal").querySelector(".modal-card").innerHTML;
+    function restoreModalContent() {
+        document.getElementById("submitModal").querySelector(".modal-card").innerHTML = originalModalHTML;
+    }
+
+    /* ========================================================
+       ANTI-CHEAT: Block keyboard shortcuts
+       ======================================================== */
+    document.addEventListener("keydown", function(e) {
+        /* Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U */
+        if (
+            e.key === "F12" ||
+            (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i")) ||
+            (e.ctrlKey && e.shiftKey && (e.key === "J" || e.key === "j")) ||
+            (e.ctrlKey && (e.key === "U" || e.key === "u"))
+        ) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
+    /* Block right-click context menu */
+    document.addEventListener("contextmenu", function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    /* Warn before closing/refreshing tab */
+    window.addEventListener("beforeunload", function(e) {
+        e.preventDefault();
+        e.returnValue = "";
+    });
+
+    /* ========================================================
+       Palette & State Tracking
+       ======================================================== */
+    function handleOptionChange(qid) {
+        const card = document.getElementById(`q-card-${qid}`);
+        const pbtn = document.getElementById(`pbtn-${qid}`);
+        const inputs = card.querySelectorAll("input, textarea");
+        let isAnswered = false;
+
+        inputs.forEach(input => {
+            const label = input.closest(".option-label");
+            if (input.type === "radio" || input.type === "checkbox") {
+                if (input.checked) {
+                    isAnswered = true;
+                    if (label) label.classList.add("checked");
+                } else {
+                    if (label) label.classList.remove("checked");
+                }
+            } else if (input.type === "file") {
+                if (input.files && input.files.length > 0) isAnswered = true;
+            } else {
+                if (input.value.trim().length > 0) isAnswered = true;
+            }
+        });
+
+        if (isAnswered) {
+            pbtn.classList.add("answered");
+        } else {
+            pbtn.classList.remove("answered");
+        }
+        updateAnsweredCount();
+    }
+
+    function clearSelection(inputName, qid) {
+        const inputs = document.querySelectorAll(`[name="${inputName}"]`);
+        inputs.forEach(input => {
+            if (input.type === "radio" || input.type === "checkbox") {
+                input.checked = false;
+            } else {
+                input.value = "";
+            }
+            const label = input.closest(".option-label");
+            if (label) label.classList.remove("checked");
+        });
+        handleOptionChange(qid);
+    }
+
+    function updateAnsweredCount() {
+        const total = document.querySelectorAll(".palette-btn").length;
+        const answered = document.querySelectorAll(".palette-btn.answered").length;
+        const counter = document.getElementById("answeredCounter");
+        if (counter) counter.innerText = `${answered} / ${total}`;
+    }
+
+    function scrollToQuestion(qid) {
+        const card = document.getElementById(`q-card-${qid}`);
+        if (card) {
+            card.scrollIntoView({ behavior: "smooth", block: "center" });
+            card.classList.add("active-target");
+            setTimeout(() => card.classList.remove("active-target"), 1200);
+        }
+    }
+
+    /* Submit Modal Handlers */
+    function openSubmitModal() {
+        restoreModalContent();
+        const total = document.querySelectorAll(".palette-btn").length;
+        const answered = document.querySelectorAll(".palette-btn.answered").length;
+        const text = document.getElementById("modalStatsText");
+        if (text) {
+            text.innerText = `You have answered ${answered} out of ${total} questions. Are you ready to finish and submit your exam?`;
+        }
+        document.getElementById("submitModal").style.display = "flex";
+    }
+
+    function closeSubmitModal() {
+        document.getElementById("submitModal").style.display = "none";
+    }
+
+    function confirmSubmit() {
+        document.getElementById("examForm").submit();
+    }
+</script>
+{% endif %}
+
+</body>
+</html>

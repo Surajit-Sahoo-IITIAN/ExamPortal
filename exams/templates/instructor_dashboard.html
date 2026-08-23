@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instructor Dashboard - Examination Portal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Navbar */
+        .dash-navbar {
+            background: #0f172a;
+            color: white;
+            padding: 16px 28px;
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .navbar-container {
+            max-width: 1380px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .brand-badge {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .brand-badge svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .brand-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .brand-text p {
+            font-size: 11.5px;
+            color: #94a3b8;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .admin-link {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .admin-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .logout-btn {
+            background: #ef4444;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 13.5px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+
+        /* Dashboard Content Layout */
+        .dash-container {
+            max-width: 1380px;
+            margin: 32px auto;
+            padding: 0 28px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Header Greeting */
+        .dash-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dash-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .dash-header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* KPI Metric Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 22px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .kpi-icon-wrap {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .kpi-icon-wrap.blue { background: #eff6ff; color: #2563eb; }
+        .kpi-icon-wrap.green { background: #ecfdf5; color: #10b981; }
+        .kpi-icon-wrap.amber { background: #fffbeb; color: #f59e0b; }
+        .kpi-icon-wrap.purple { background: #f5f3ff; color: #8b5cf6; }
+
+        .kpi-icon-wrap svg {
+            width: 26px;
+            height: 26px;
+        }
+
+        .kpi-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .kpi-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.1;
+            margin-top: 4px;
+        }
+
+        /* Exams Section */
+        .exams-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .exams-section-header h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Exam Grid */
+        .exam-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
+        }
+
+        @media (max-width: 640px) {
+            .exam-cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .exam-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 26px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .exam-card:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .exam-card-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.35;
+        }
+
+        .status-tag {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            flex-shrink: 0;
+        }
+
+        .status-ACTIVE { background: var(--success-light); color: #065f46; border: 1px solid var(--success); }
+        .status-UPCOMING { background: var(--warning-light); color: #92400e; border: 1px solid var(--warning); }
+        .status-COMPLETED { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        .exam-meta-pills {
+            display: flex;
+            gap: 10px;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        /* Metric Rows inside Card */
+        .card-metrics-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 14px 16px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+            margin-bottom: 18px;
+            border: 1px solid #edf2f7;
+        }
+
+        .sub-metric-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .sub-metric-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 2px;
+        }
+
+        /* Security Bar */
+        .security-badge-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12.5px;
+            color: var(--text-muted);
+            padding: 10px 12px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .violation-pill {
+            font-weight: 700;
+            color: #dc2626;
+            background: #fef2f2;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        /* Card Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-analytics {
+            flex: 1;
+            padding: 10px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .btn-analytics:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-preview {
+            padding: 10px 14px;
+            background: #f1f5f9;
+            color: #334155;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            transition: background 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-preview:hover {
+            background: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="dash-navbar">
+    <div class="navbar-container">
+        <a href="{% url 'instructor_dashboard' %}" class="brand-logo">
+            <div class="brand-badge">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>Examination Control Center</h1>
+                <p>Instructor & Proctoring Analytics Dashboard</p>
+            </div>
+        </a>
+
+        <div class="user-actions">
+            <a href="/admin/" target="_blank" class="admin-link">
+                Django Admin
+            </a>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                Logout
+            </a>
+        </div>
+    </div>
+</header>
+
+<!-- Main Container -->
+<main class="dash-container">
+    <div class="dash-header">
+        <div>
+            <h2>Overview & Examinations</h2>
+            <p>Welcome back, <strong>{{ request.user.username }}</strong>. Real-time statistics across all tests.</p>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon-wrap blue">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+            </div>
+            <div class="kpi-info">
+                <span class="kpi-label">Total Examinations</span>
+                <span class="kpi-val">{{ total_exams }}</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon-wrap green">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+            </div>
+            <div class="kpi-info">
+                <span class="kpi-label">Active Exams</span>
+                <span class="kpi-val">{{ active_count }}</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon-wrap amber">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div class="kpi-info">
+                <span class="kpi-label">Upcoming Exams</span>
+                <span class="kpi-val">{{ upcoming_count }}</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon-wrap purple">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+            </div>
+            <div class="kpi-info">
+                <span class="kpi-label">Completed Exams</span>
+                <span class="kpi-val">{{ completed_count }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Cards Grid -->
+    <div class="exams-section-header">
+        <h3>Exam Portfolios</h3>
+    </div>
+
+    <div class="exam-cards-grid">
+        {% for item in dashboard_exams %}
+            <div class="exam-card">
+                <div>
+                    <div class="card-top">
+                        <h4 class="exam-card-title">{{ item.exam.title }}</h4>
+                        <span class="status-tag status-{{ item.status }}">{{ item.status_label }}</span>
+                    </div>
+
+                    <div class="exam-meta-pills">
+                        <span>Duration: <strong>{{ item.exam.duration }} Mins</strong></span>
+                        <span>•</span>
+                        <span>Total Marks: <strong>{{ item.exam.total_marks }}</strong></span>
+                    </div>
+
+                    <div class="card-metrics-box">
+                        <div>
+                            <div class="sub-metric-label">Students</div>
+                            <div class="sub-metric-val">{{ item.student_count }}</div>
+                        </div>
+                        <div>
+                            <div class="sub-metric-label">Avg Score</div>
+                            <div class="sub-metric-val">{{ item.average_score }}</div>
+                        </div>
+                        <div>
+                            <div class="sub-metric-label">Highest</div>
+                            <div class="sub-metric-val">{{ item.highest_score }}</div>
+                        </div>
+                    </div>
+
+                    <div class="security-badge-row">
+                        <span>Submissions: <strong>{{ item.normal_submissions }} Normal / {{ item.auto_submissions }} Auto</strong></span>
+                        <span class="violation-pill">{{ item.total_violations }} Violations</span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{% url 'exam_analytics' item.exam.id %}" class="btn-analytics">
+                        <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        View Analytics
+                    </a>
+                    <a href="{% url 'exam_view' item.exam.id %}" class="btn-preview" title="Admin Preview">
+                        Preview
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</main>
+
+</body>
+</html>

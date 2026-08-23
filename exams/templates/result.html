@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }} - Performance Report</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
+    <!-- MathJax -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #eff6ff;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-light: #ecfdf5;
+            --success-border: #a7f3d0;
+            --danger: #ef4444;
+            --danger-light: #fef2f2;
+            --danger-border: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
+            --warning-border: #fde68a;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 32px 20px;
+            position: relative;
+        }
+
+        /* Watermark Background */
+        .watermark-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            opacity: 0.04;
+        }
+
+        .watermark {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: rotate(-25deg);
+            font-size: 16px;
+            font-weight: 800;
+            color: #000000;
+            user-select: none;
+            letter-spacing: 1px;
+        }
+
+        .report-wrapper {
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        /* Hero Performance Card */
+        .scorecard-hero {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            border-radius: 20px;
+            padding: 36px;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scorecard-hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .exam-title-section h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .exam-meta-line {
+            display: flex;
+            gap: 14px;
+            font-size: 13.5px;
+            color: #94a3b8;
+            flex-wrap: wrap;
+        }
+
+        .result-id-pill {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 6px 14px;
+            border-radius: 100px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            color: #38bdf8;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* KPI Score Grid */
+        .score-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.09);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .stat-value small {
+            font-size: 14px;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        /* Performance Feedback Banner */
+        .feedback-banner {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .feedback-badge {
+            background: #38bdf8;
+            color: #0f172a;
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+
+        .feedback-text {
+            font-size: 14px;
+            color: #e2e8f0;
+            line-height: 1.5;
+        }
+
+        /* Section Title */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .section-header h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .breakdown-summary {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .count-pill {
+            padding: 4px 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .count-pill.correct { background: var(--success-light); color: var(--success); }
+        .count-pill.incorrect { background: var(--danger-light); color: var(--danger); }
+        .count-pill.unanswered { background: #f1f5f9; color: var(--text-muted); }
+
+        /* Question Solution Cards */
+        .solution-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 26px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .solution-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .solution-q-num {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .solution-status-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-correct {
+            background: var(--success-light);
+            color: #065f46;
+            border: 1px solid var(--success-border);
+        }
+
+        .status-incorrect {
+            background: var(--danger-light);
+            color: #991b1b;
+            border: 1px solid var(--danger-border);
+        }
+
+        .status-unanswered {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid var(--border);
+        }
+
+        .question-text-area {
+            font-size: 15.5px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 18px;
+        }
+
+        /* Result Options */
+        .result-options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .result-option-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border);
+            background: #ffffff;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .result-option-row.option-correct {
+            background: var(--success-light);
+            border-color: var(--success-border);
+            color: #065f46;
+            font-weight: 500;
+        }
+
+        .result-option-row.option-incorrect {
+            background: var(--danger-light);
+            border-color: var(--danger-border);
+            color: #991b1b;
+            font-weight: 500;
+        }
+
+        .opt-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+            background: #f1f5f9;
+            color: #475569;
+        }
+
+        .option-correct .opt-indicator {
+            background: var(--success);
+            color: white;
+        }
+
+        .option-incorrect .opt-indicator {
+            background: var(--danger);
+            color: white;
+        }
+
+        .opt-tags {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .pill-correct {
+            background: #10b981;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        .pill-your-ans {
+            background: #ef4444;
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        /* Explanation Box */
+        .explanation-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 16px 18px;
+            margin-top: 14px;
+        }
+
+        .explanation-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .explanation-content {
+            font-size: 14px;
+            color: #14532d;
+            line-height: 1.55;
+        }
+
+        /* Instructor Suggestions Card */
+        .instructor-feedback-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border: 1.5px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .instructor-feedback-card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .instructor-feedback-card p {
+            font-size: 14.5px;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .btn-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14.5px;
+            align-self: center;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-home:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Watermark Elements -->
+<div class="watermark-container">
+    {% for i in "123456789012" %}
+        <div class="watermark">{{ request.user.username }} • {{ result.submitted_at|date:"d M Y" }}</div>
+    {% endfor %}
+</div>
+
+<div class="report-wrapper">
+    <!-- Hero Scorecard -->
+    <section class="scorecard-hero">
+        <div class="hero-top">
+            <div class="exam-title-section">
+                <h1>{{ exam.title }}</h1>
+                <div class="exam-meta-line">
+                    <span>Student: <strong>{{ request.user.username }}</strong></span>
+                    <span>•</span>
+                    <span>Submitted: <strong>{{ result.submitted_at|date:"d M Y, h:i A" }}</strong></span>
+                </div>
+            </div>
+            <div class="result-id-pill">{{ result_id }}</div>
+        </div>
+
+        <div class="score-stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Score Obtained</div>
+                <div class="stat-value">{{ result.total_score }} <small>/ {{ exam.total_marks }}</small></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Percentage</div>
+                <div class="stat-value">{{ percentage }}%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Accuracy</div>
+                <div class="stat-value">{{ accuracy }}%</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Attempted</div>
+                <div class="stat-value">{{ attempted_count }} <small>/ {{ total_questions }}</small></div>
+            </div>
+        </div>
+
+        <div class="feedback-banner">
+            <span class="feedback-badge">{{ performance_level }}</span>
+            <span class="feedback-text">{{ performance_feedback }}</span>
+        </div>
+    </section>
+
+    {% if instructor_feedback %}
+        <div class="instructor-feedback-card">
+            <h3>
+                <svg style="width: 20px; height: 20px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                </svg>
+                Instructor's Remarks
+            </h3>
+            <p>{{ instructor_feedback }}</p>
+        </div>
+    {% endif %}
+
+    <!-- Solutions Review Header -->
+    <div class="section-header">
+        <h2>Question Analysis & Solutions</h2>
+        <div class="breakdown-summary">
+            <div class="count-pill correct">
+                <span>{{ correct_count }} Correct</span>
+            </div>
+            <div class="count-pill incorrect">
+                <span>{{ incorrect_count }} Incorrect</span>
+            </div>
+            <div class="count-pill unanswered">
+                <span>{{ unanswered_count }} Unanswered</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Cards -->
+    {% for submission in submissions %}
+        <article class="solution-card">
+            <div class="solution-header">
+                <span class="solution-q-num">Question {{ forloop.counter }}</span>
+                {% if not submission.answer_text and not submission.answer_file %}
+                    <span class="solution-status-badge status-unanswered">Not Attempted (0 Marks)</span>
+                {% elif submission.marks_obtained == submission.question.marks %}
+                    <span class="solution-status-badge status-correct">Correct (+{{ submission.marks_obtained }} Marks)</span>
+                {% else %}
+                    <span class="solution-status-badge status-incorrect">Incorrect ({{ submission.marks_obtained }} Marks)</span>
+                {% endif %}
+            </div>
+
+            <div class="question-text-area">
+                {{ submission.question.question_text|safe }}
+            </div>
+
+            {% if submission.question.question_image %}
+                <div style="margin-bottom: 16px;">
+                    <img src="{{ submission.question.question_image.url }}" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);" alt="Question Diagram">
+                </div>
+            {% endif %}
+
+            <!-- Options Review for MCQ / MULTI -->
+            {% if submission.result_options %}
+                <div class="result-options-list">
+                    {% for opt in submission.result_options %}
+                        {% if opt.value %}
+                            <div class="result-option-row {{ opt.css_class }}">
+                                <span class="opt-indicator">
+                                    {% if opt.number == 1 %}A{% elif opt.number == 2 %}B{% elif opt.number == 3 %}C{% elif opt.number == 4 %}D{% else %}{{ opt.number }}{% endif %}
+                                </span>
+                                <div>{{ opt.value }}</div>
+                                <div class="opt-tags">
+                                    {% if opt.is_correct %}
+                                        <span class="pill-correct">Correct Option</span>
+                                    {% endif %}
+                                    {% if opt.is_selected and not opt.is_correct %}
+                                        <span class="pill-your-ans">Your Answer</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div style="background: #f8fafc; padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; margin-bottom: 16px;">
+                    <strong>Your Response:</strong> {{ submission.answer_text|default:"(No answer submitted)" }}
+                    {% if submission.question.correct_answer %}
+                        <div style="margin-top: 6px; color: #166534;">
+                            <strong>Model Correct Answer:</strong> {{ submission.question.correct_answer }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {% if submission.question.explanation %}
+                <div class="explanation-box">
+                    <div class="explanation-title">
+                        <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Detailed Explanation
+                    </div>
+                    <div class="explanation-content">
+                        {{ submission.question.explanation|safe }}
+                    </div>
+                </div>
+            {% endif %}
+        </article>
+    {% endfor %}
+
+    <a href="{% url 'logout' %}" class="btn-home">
+        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        Finish & Logout
+    </a>
+</div>
+
+</body>
+</html>

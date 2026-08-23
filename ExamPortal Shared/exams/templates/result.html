@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>{{ exam.title }} - Result</title>
+
+    <!-- ==================================================
+         MATHJAX
+         ================================================== -->
+
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]']]
+            }
+        };
+    </script>
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+    </script>
+
+
+    <style>
+
+        /* ==================================================
+           GENERAL PAGE
+           ================================================== */
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 30px;
+        }
+
+
+        /* ==================================================
+           WATERMARK
+           ================================================== */
+
+        .watermark-container {
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100vw;
+            height: 100vh;
+
+            z-index: 100;
+
+            pointer-events: none;
+
+            overflow: hidden;
+        }
+
+        .watermark {
+            position: absolute;
+
+            width: 340px;
+
+            text-align: center;
+
+            font-size: 15px;
+
+            font-weight: 600;
+
+            color: rgba(80, 80, 80, 0.10);
+
+            white-space: nowrap;
+
+            transform: rotate(-30deg);
+
+            letter-spacing: 0.5px;
+        }
+
+
+        /* ==================================================
+           WATERMARK POSITIONS
+           ================================================== */
+
+        .wm1 {
+            top: 7%;
+            left: 2%;
+        }
+
+        .wm2 {
+            top: 7%;
+            left: 36%;
+        }
+
+        .wm3 {
+            top: 7%;
+            left: 70%;
+        }
+
+        .wm4 {
+            top: 25%;
+            left: 2%;
+        }
+
+        .wm5 {
+            top: 25%;
+            left: 36%;
+        }
+
+        .wm6 {
+            top: 25%;
+            left: 70%;
+        }
+
+        .wm7 {
+            top: 43%;
+            left: 2%;
+        }
+
+        .wm8 {
+            top: 43%;
+            left: 36%;
+        }
+
+        .wm9 {
+            top: 43%;
+            left: 70%;
+        }
+
+        .wm10 {
+            top: 61%;
+            left: 2%;
+        }
+
+        .wm11 {
+            top: 61%;
+            left: 36%;
+        }
+
+        .wm12 {
+            top: 61%;
+            left: 70%;
+        }
+
+        .wm13 {
+            top: 79%;
+            left: 2%;
+        }
+
+        .wm14 {
+            top: 79%;
+            left: 36%;
+        }
+
+        .wm15 {
+            top: 79%;
+            left: 70%;
+        }
+
+
+        /* ==================================================
+           MAIN CONTAINER
+           ================================================== */
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+
+            margin: auto;
+
+            padding: 30px;
+
+            box-sizing: border-box;
+
+            background: white;
+
+            border-radius: 10px;
+
+            position: relative;
+
+            z-index: 1;
+        }
+
+
+        /* ==================================================
+           HEADINGS
+           ================================================== */
+
+        h1 {
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 30px;
+        }
+
+
+        /* ==================================================
+           STUDENT INFORMATION
+           ================================================== */
+
+        .student-info {
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 15px 20px;
+
+            margin-top: 20px;
+
+            background: #fafafa;
+        }
+
+
+        /* ==================================================
+           SCORE
+           ================================================== */
+
+        .score {
+            text-align: center;
+
+            font-size: 24px;
+
+            font-weight: bold;
+
+            margin: 25px 0;
+
+            padding: 20px;
+
+            border-radius: 8px;
+
+            background: #eef6ff;
+        }
+
+
+        /* ==================================================
+           PERFORMANCE SUMMARY
+           ================================================== */
+
+        .summary {
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 20px;
+
+            margin-top: 20px;
+
+            background: #fafafa;
+        }
+
+        .summary-grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(4, 1fr);
+
+            gap: 12px;
+
+            margin-top: 15px;
+        }
+
+        .summary-card {
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 15px;
+
+            text-align: center;
+
+            background: white;
+        }
+
+        .summary-value {
+            font-size: 22px;
+
+            font-weight: bold;
+        }
+
+        .summary-label {
+            margin-top: 5px;
+
+            color: #666;
+        }
+
+        .feedback-box {
+            margin-top: 18px;
+
+            padding: 15px;
+
+            border-radius: 7px;
+
+            background: #eef6ff;
+
+            line-height: 1.6;
+        }
+
+        .instructor-box {
+            margin-top: 18px;
+
+            padding: 15px;
+
+            border-radius: 7px;
+
+            background: #f7f7f7;
+
+            border-left: 4px solid #1976d2;
+
+            line-height: 1.6;
+        }
+
+
+        /* ==================================================
+           BUTTONS
+           ================================================== */
+
+        .button-container {
+            text-align: center;
+
+            margin: 25px 0;
+        }
+
+        .print-button {
+            padding: 12px 25px;
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            border: none;
+
+            border-radius: 6px;
+
+            cursor: pointer;
+
+            background: #1976d2;
+
+            color: white;
+        }
+
+        .print-button:hover {
+            background: #125ca1;
+        }
+
+        .logout-button {
+            display: inline-block;
+
+            padding: 10px 20px;
+
+            font-size: 15px;
+
+            text-decoration: none;
+
+            border-radius: 6px;
+
+            background: #555;
+
+            color: white;
+        }
+
+
+        /* ==================================================
+           QUESTION CARD
+           ================================================== */
+
+        .question {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            border: 1px solid #ddd;
+
+            border-radius: 8px;
+
+            padding: 24px;
+
+            margin-top: 25px;
+
+            background: white;
+
+            position: relative;
+
+            z-index: 2;
+        }
+
+
+        /* ==================================================
+           QUESTION TEXT
+           ================================================== */
+
+        .question-text {
+            width: 100%;
+
+            font-size: 18px;
+
+            line-height: 1.6;
+
+            margin-top: 10px;
+        }
+
+
+        /* ==================================================
+           OPTIONS CONTAINER
+           ================================================== */
+
+        .options {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            margin-top: 15px;
+        }
+
+
+        /* ==================================================
+           ALL OPTIONS
+           ================================================== */
+
+        .option {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 16px 20px;
+
+            margin: 10px 0;
+
+            border: 1px solid #d5d5d5;
+
+            border-radius: 7px;
+
+            background: #fafafa;
+
+            font-size: 18px;
+
+            line-height: 1.5;
+
+            display: block;
+        }
+
+
+        /* ==================================================
+           OPTION NUMBER
+           ================================================== */
+
+        .option-number {
+            font-weight: bold;
+
+            margin-right: 10px;
+        }
+
+
+        /* ==================================================
+           CORRECT OPTION
+           ================================================== */
+
+        .option-correct {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 16px 20px;
+
+            margin: 10px 0;
+
+            background-color: #c6efce;
+
+            border: 2px solid #28a745;
+
+            border-radius: 7px;
+
+            color: #155724;
+
+            font-size: 18px;
+
+            line-height: 1.5;
+
+            font-weight: bold;
+
+            display: block;
+        }
+
+
+        /* ==================================================
+           INCORRECT SELECTED OPTION
+           ================================================== */
+
+        .option-incorrect {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            padding: 16px 20px;
+
+            margin: 10px 0;
+
+            background-color: #ffc7ce;
+
+            border: 2px solid #dc3545;
+
+            border-radius: 7px;
+
+            color: #721c24;
+
+            font-size: 18px;
+
+            line-height: 1.5;
+
+            font-weight: bold;
+
+            display: block;
+        }
+
+
+        /* ==================================================
+           RESULT STATUS
+           ================================================== */
+
+        .correct {
+            color: green;
+
+            font-weight: bold;
+
+            font-size: 18px;
+        }
+
+        .incorrect {
+            color: red;
+
+            font-weight: bold;
+
+            font-size: 18px;
+        }
+
+
+        /* ==================================================
+           MARKS
+           ================================================== */
+
+        .marks {
+            font-weight: bold;
+
+            margin-top: 12px;
+
+            font-size: 17px;
+        }
+
+
+        /* ==================================================
+           EXPLANATION
+           ================================================== */
+
+        .explanation {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            background: #eef6ff;
+
+            padding: 18px 20px;
+
+            margin-top: 18px;
+
+            border-radius: 6px;
+
+            line-height: 1.6;
+        }
+
+        .explanation h4 {
+            margin-top: 0;
+
+            margin-bottom: 15px;
+        }
+
+
+        /* ==================================================
+           ANSWER BOX
+           ================================================== */
+
+        .answer-box {
+            width: 100%;
+
+            box-sizing: border-box;
+
+            background: #f7f7f7;
+
+            padding: 14px 18px;
+
+            margin-top: 8px;
+
+            border-radius: 5px;
+
+            border: 1px solid #ddd;
+        }
+
+
+        /* ==================================================
+           QUESTION IMAGE
+           ================================================== */
+
+        .question-image {
+            max-width: 100%;
+
+            height: auto;
+
+            margin-top: 12px;
+        }
+
+
+        /* ==================================================
+           PRINT SETTINGS
+           ================================================== */
+
+        @media print {
+
+            html,
+            body {
+                background: white;
+
+                margin: 0;
+
+                padding: 0;
+            }
+
+            .container {
+                width: 100%;
+
+                max-width: 100%;
+
+                margin: 0;
+
+                padding: 20px;
+
+                background: white;
+
+                border-radius: 0;
+            }
+
+            .print-button,
+            .logout-button,
+            .no-print {
+                display: none !important;
+            }
+
+            .watermark-container {
+                display: block !important;
+
+                position: fixed !important;
+
+                top: 0 !important;
+
+                left: 0 !important;
+
+                width: 100vw !important;
+
+                height: 100vh !important;
+
+                z-index: 100 !important;
+
+                pointer-events: none !important;
+
+                overflow: hidden !important;
+            }
+
+            .watermark {
+                color:
+                    rgba(80, 80, 80, 0.10)
+                    !important;
+
+                -webkit-print-color-adjust:
+                    exact !important;
+
+                print-color-adjust:
+                    exact !important;
+            }
+
+            .option-correct {
+                background-color:
+                    #c6efce !important;
+
+                border:
+                    2px solid #28a745 !important;
+
+                color:
+                    #155724 !important;
+
+                -webkit-print-color-adjust:
+                    exact !important;
+
+                print-color-adjust:
+                    exact !important;
+            }
+
+            .option-incorrect {
+                background-color:
+                    #ffc7ce !important;
+
+                border:
+                    2px solid #dc3545 !important;
+
+                color:
+                    #721c24 !important;
+
+                -webkit-print-color-adjust:
+                    exact !important;
+
+                print-color-adjust:
+                    exact !important;
+            }
+
+            .score {
+                background-color:
+                    #eef6ff !important;
+
+                -webkit-print-color-adjust:
+                    exact !important;
+
+                print-color-adjust:
+                    exact !important;
+            }
+
+            .feedback-box,
+            .explanation {
+                background-color:
+                    #eef6ff !important;
+
+                -webkit-print-color-adjust:
+                    exact !important;
+
+                print-color-adjust:
+                    exact !important;
+            }
+
+            .question {
+                page-break-inside: avoid;
+            }
+
+            .explanation {
+                page-break-inside: avoid;
+            }
+        }
+
+
+        /* ==================================================
+           RESPONSIVE
+           ================================================== */
+
+        @media (max-width: 700px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .question {
+                padding: 16px;
+            }
+
+            .summary-grid {
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .option,
+            .option-correct,
+            .option-incorrect {
+                font-size: 16px;
+
+                padding: 14px 16px;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+     WATERMARK
+     ================================================== -->
+
+<div class="watermark-container">
+
+    <div class="watermark wm1">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm2">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm3">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm4">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm5">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm6">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm7">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm8">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm9">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm10">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm11">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm12">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm13">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm14">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+    <div class="watermark wm15">
+        Prepared &amp; Authorized by • Surajit Sahoo
+    </div>
+
+</div>
+
+
+<!-- ==================================================
+     MAIN CONTENT
+     ================================================== -->
+
+<div class="container">
+
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <h1>
+        Examination Result
+    </h1>
+
+
+    <h2>
+        {{ exam.title }}
+    </h2>
+
+
+    <!-- ==================================================
+         STUDENT INFORMATION
+         ================================================== -->
+
+    <div class="student-info">
+
+        <strong>
+            Student:
+        </strong>
+
+        {{ request.user.username }}
+
+        <br>
+        <br>
+
+        <strong>
+            Exam:
+        </strong>
+
+        {{ exam.title }}
+
+    </div>
+
+
+    <!-- ==================================================
+         PRINT BUTTON
+         ================================================== -->
+
+    <div class="button-container no-print">
+
+        <button
+            onclick="window.print()"
+            class="print-button"
+        >
+            🖨️ Print Result
+        </button>
+
+    </div>
+
+
+    <!-- ==================================================
+         SCORE
+         ================================================== -->
+
+    <div class="score">
+
+        Your Score:
+
+        {{ result.total_score }}
+
+        /
+
+        {{ exam.total_marks }}
+
+    </div>
+
+
+    <!-- ==================================================
+         PERFORMANCE SUMMARY
+         ================================================== -->
+
+    <div class="summary">
+
+        <h2>
+            Performance Summary
+        </h2>
+
+
+        <div class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-value">
+                    {{ correct_count }}
+                </div>
+
+                <div class="summary-label">
+                    Correct
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-value">
+                    {{ incorrect_count }}
+                </div>
+
+                <div class="summary-label">
+                    Incorrect
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-value">
+                    {{ unanswered_count }}
+                </div>
+
+                <div class="summary-label">
+                    Unanswered
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-value">
+                    {{ percentage }}%
+                </div>
+
+                <div class="summary-label">
+                    Score
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ==============================================
+             PERFORMANCE FEEDBACK
+             ============================================== -->
+
+        <div class="feedback-box">
+
+            <strong>
+                Performance:
+            </strong>
+
+            {{ performance_level }}
+
+            <br>
+            <br>
+
+            {{ performance_feedback }}
+
+        </div>
+
+
+        <!-- ==============================================
+             INSTRUCTOR FEEDBACK
+             ============================================== -->
+
+        {% if instructor_feedback %}
+
+            <div class="instructor-box">
+
+                <strong>
+                    Instructor Feedback
+                </strong>
+
+                <br>
+                <br>
+
+                {{ instructor_feedback|safe }}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ==================================================
+         QUESTIONS
+         ================================================== -->
+
+    {% for submission in submissions %}
+
+        <div class="question">
+
+
+            <!-- ==========================================
+                 QUESTION NUMBER
+                 ========================================== -->
+
+            <h3>
+                Question {{ forloop.counter }}
+            </h3>
+
+
+            <!-- ==========================================
+                 QUESTION TEXT
+                 ========================================== -->
+
+            <div class="question-text">
+
+                {{ submission.question.question_text|safe }}
+
+            </div>
+
+
+            <!-- ==========================================
+                 QUESTION IMAGE
+                 ========================================== -->
+
+            {% if submission.question.question_image %}
+
+                <div style="margin-top: 12px;">
+
+                    <img
+                        src="{{ submission.question.question_image.url }}"
+                        class="question-image"
+                    >
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- ==========================================
+                 MCQ / MULTI
+                 ========================================== -->
+
+            {% if submission.question.question_type == "MCQ" or submission.question.question_type == "MULTI" %}
+
+
+                <div class="options">
+
+                    <h4>
+                        Options
+                    </h4>
+
+
+                    {% for option in submission.result_options %}
+
+                        <div class="{{ option.css_class }}">
+
+                            <span class="option-number">
+                                {{ option.number }}.
+                            </span>
+
+                            {{ option.value|safe }}
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- ======================================
+                     RESULT STATUS
+                     ====================================== -->
+
+                {% if submission.is_evaluated %}
+
+                    {% if submission.marks_obtained == submission.question.marks %}
+
+                        <p class="correct">
+                            ✓ Correct
+                        </p>
+
+                    {% else %}
+
+                        <p class="incorrect">
+                            ✗ Incorrect
+                        </p>
+
+                    {% endif %}
+
+
+                    <p class="marks">
+
+                        Marks:
+
+                        {{ submission.marks_obtained }}
+
+                        /
+
+                        {{ submission.question.marks }}
+
+                    </p>
+
+                {% else %}
+
+                    <p>
+
+                        <strong>
+                            Manual evaluation pending
+                        </strong>
+
+                    </p>
+
+                {% endif %}
+
+
+            <!-- ==========================================
+                 OTHER QUESTION TYPES
+                 ========================================== -->
+
+            {% else %}
+
+
+                <h4>
+                    Your Answer
+                </h4>
+
+
+                <div class="answer-box">
+
+                    {% if submission.answer_text %}
+
+                        {{ submission.answer_text|safe }}
+
+                    {% elif submission.answer_file %}
+
+                        <a
+                            href="{{ submission.answer_file.url }}"
+                            class="no-print"
+                        >
+                            View uploaded answer
+                        </a>
+
+                        <span>
+                            Uploaded answer
+                        </span>
+
+                    {% else %}
+
+                        Not answered
+
+                    {% endif %}
+
+                </div>
+
+
+                {% if submission.question.correct_answer %}
+
+                    <h4>
+                        Correct Answer
+                    </h4>
+
+                    <div class="answer-box">
+
+                        {{ submission.question.correct_answer|safe }}
+
+                    </div>
+
+                {% endif %}
+
+
+                {% if submission.is_evaluated %}
+
+                    {% if submission.marks_obtained == submission.question.marks %}
+
+                        <p class="correct">
+                            ✓ Correct
+                        </p>
+
+                    {% else %}
+
+                        <p class="incorrect">
+                            ✗ Incorrect
+                        </p>
+
+                    {% endif %}
+
+
+                    <p class="marks">
+
+                        Marks:
+
+                        {{ submission.marks_obtained }}
+
+                        /
+
+                        {{ submission.question.marks }}
+
+                    </p>
+
+                {% else %}
+
+                    <p>
+
+                        <strong>
+                            Manual evaluation pending
+                        </strong>
+
+                    </p>
+
+                {% endif %}
+
+            {% endif %}
+
+
+            <!-- ==========================================
+                 EXPLANATION
+                 ========================================== -->
+
+            {% if submission.question.explanation %}
+
+                <div class="explanation">
+
+                    <h4>
+                        Explanation
+                    </h4>
+
+                    {{ submission.question.explanation|safe }}
+
+                </div>
+
+            {% endif %}
+
+
+        </div>
+
+    {% endfor %}
+
+
+    <!-- ==================================================
+         BOTTOM BUTTONS
+         ================================================== -->
+
+    <div class="button-container no-print">
+
+        <button
+            onclick="window.print()"
+            class="print-button"
+        >
+            🖨️ Print Result
+        </button>
+
+        <br>
+        <br>
+
+        <a
+            href="/logout/"
+            class="logout-button"
+        >
+            Logout
+        </a>
+
+    </div>
+
+
+</div>
+
+
+</body>
+
+</html>
