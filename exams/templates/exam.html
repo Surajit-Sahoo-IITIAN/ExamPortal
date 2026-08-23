@@ -1141,59 +1141,75 @@
     updateTimer();
 
     /* ========================================================
-       ANTI-CHEAT: Tab Switch Detection (Hardened)
+       ANTI-CHEAT: Multi-Event Tab & Window Switch Detection
        ======================================================== */
     let violationInProgress = false;
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let localViolationCount = 0;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '';
 
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden && !violationInProgress) {
-            violationInProgress = true;
+    function triggerViolationCheck() {
+        if (violationInProgress) return;
+        violationInProgress = true;
 
-            fetch("{% url 'exam_violation' exam.id %}", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": csrfToken,
-                },
-                credentials: "same-origin",
-                keepalive: true
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.action === 'warning') {
-                    /* 1st violation: show warning modal */
-                    showViolationWarning(data.message);
-                    violationInProgress = false;  /* Allow detecting next violation */
-                } else if (data.action === 'terminated') {
-                    /* 2nd+ violation: auto-submit exam immediately */
-                    showTerminationAndRedirect(data.message);
-                } else {
-                    violationInProgress = false;
-                }
-            })
-            .catch(err => {
-                console.error("Violation error:", err);
+        fetch("{% url 'exam_violation' exam.id %}", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": csrfToken,
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            credentials: "same-origin",
+            keepalive: true
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.action === 'warning') {
+                localViolationCount = 1;
+                showViolationWarning(data.message);
                 violationInProgress = false;
-            });
+            } else if (data.action === 'terminated') {
+                localViolationCount = 2;
+                showTerminationAndAutoSubmit(data.message);
+            } else if (data.action === 'none') {
+                /* Staff preview mode */
+                console.log("Anti-cheat: Staff preview mode active (no penalty).");
+                violationInProgress = false;
+            } else {
+                violationInProgress = false;
+            }
+        })
+        .catch(err => {
+            console.error("Violation check error:", err);
+            violationInProgress = false;
+        });
+    }
+
+    /* 1. Detect switching browser tabs / minimizing window */
+    document.addEventListener("visibilitychange", function() {
+        if (document.hidden) {
+            triggerViolationCheck();
         }
+    });
+
+    /* 2. Detect clicking outside browser, opening another app, or split-screen */
+    window.addEventListener("blur", function() {
+        triggerViolationCheck();
     });
 
     /* Violation Warning Modal (1st offense) */
     function showViolationWarning(message) {
-        /* Reuse the existing modal overlay */
         const modal = document.getElementById("submitModal");
         const card = modal.querySelector(".modal-card");
 
         card.innerHTML = `
-            <div class="modal-icon" style="background: #fffbeb; color: #f59e0b;">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="modal-icon" style="background: #fffbeb; color: #f59e0b; width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h3 class="modal-title" style="color: #b45309;">⚠ Warning — Violation Detected</h3>
-            <p class="modal-text" style="color: #92400e; font-weight: 500;">${message}</p>
+            <h3 class="modal-title" style="color: #b45309; font-size: 20px; font-weight: 700; margin-bottom: 8px;">⚠ Warning: Tab Switch Detected</h3>
+            <p class="modal-text" style="color: #92400e; font-weight: 500; font-size: 14.5px; line-height: 1.5; margin-bottom: 20px;">${message}</p>
             <div class="modal-actions">
-                <button type="button" class="btn-modal-confirm" style="background: linear-gradient(135deg, #f59e0b, #d97706);"
+                <button type="button" class="btn-modal-confirm" style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 12px 24px; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; width: 100%;"
                     onclick="document.getElementById('submitModal').style.display='none'; restoreModalContent();">
                     I Understand — Return to Exam
                 </button>
@@ -1202,26 +1218,32 @@
         modal.style.display = "flex";
     }
 
-    /* Termination screen (2nd offense) — redirect to login */
-    function showTerminationAndRedirect(message) {
+    /* Termination screen (2nd offense) — auto submits form and locks session */
+    function showTerminationAndAutoSubmit(message) {
         const modal = document.getElementById("submitModal");
         const card = modal.querySelector(".modal-card");
 
         card.innerHTML = `
-            <div class="modal-icon" style="background: #fef2f2; color: #ef4444;">
-                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="modal-icon" style="background: #fef2f2; color: #ef4444; width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                <svg style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                 </svg>
             </div>
-            <h3 class="modal-title" style="color: #dc2626;">Examination Terminated</h3>
-            <p class="modal-text" style="color: #991b1b; font-weight: 500;">${message}</p>
+            <h3 class="modal-title" style="color: #dc2626; font-size: 20px; font-weight: 700; margin-bottom: 8px;">Examination Terminated</h3>
+            <p class="modal-text" style="color: #991b1b; font-weight: 500; font-size: 14.5px; line-height: 1.5; margin-bottom: 20px;">${message}</p>
             <div class="modal-actions">
-                <a href="{% url 'logout' %}" class="btn-modal-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626); text-decoration: none; text-align: center;">
-                    Acknowledge & Logout
+                <a href="{% url 'logout' %}" class="btn-modal-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; display: block; width: 100%;">
+                    Acknowledge & Exit
                 </a>
             </div>
         `;
         modal.style.display = "flex";
+
+        /* Auto-submit the exam form after 2 seconds to ensure answers are recorded */
+        setTimeout(() => {
+            const form = document.getElementById("examForm");
+            if (form) form.submit();
+        }, 2000);
     }
 
     /* Saved original modal HTML for restoration after warning */
