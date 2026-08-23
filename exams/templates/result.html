@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ exam.title }} - Performance Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Performance Scorecard • {{ exam.title }}</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
     <!-- MathJax -->
     <script>
@@ -22,619 +22,444 @@
 
     <style>
         :root {
+            --bg-canvas: #f8fafc;
+            --surface-card: #ffffff;
+            --surface-subtle: #f1f5f9;
+            --border-light: #e2e8f0;
+            --border-hover: #cbd5e1;
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --text-sub: #64748b;
+            --text-disabled: #94a3b8;
             --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary-hover: #1d4ed8;
             --primary-light: #eff6ff;
-            --bg-page: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
             --success: #10b981;
             --success-light: #ecfdf5;
             --success-border: #a7f3d0;
+            --warning: #f59e0b;
+            --warning-light: #fffbeb;
             --danger: #ef4444;
             --danger-light: #fef2f2;
             --danger-border: #fecaca;
-            --warning: #f59e0b;
-            --warning-light: #fffbeb;
-            --warning-border: #fde68a;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --radius-card: 16px;
+            --radius-lg: 12px;
+            --radius-pill: 30px;
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 16px -2px rgba(15, 23, 42, 0.05);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-body);
             min-height: 100vh;
-            padding: 32px 20px;
-            position: relative;
-        }
-
-        /* Watermark Background */
-        .watermark-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(4, 1fr);
-            opacity: 0.04;
-        }
-
-        .watermark {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            transform: rotate(-25deg);
-            font-size: 16px;
-            font-weight: 800;
-            color: #000000;
-            user-select: none;
-            letter-spacing: 1px;
+            flex-direction: column;
+            padding: 32px 16px 80px;
+            -webkit-font-smoothing: antialiased;
         }
 
-        .report-wrapper {
-            position: relative;
-            z-index: 10;
-            max-width: 1000px;
+        .scorecard-container {
+            max-width: 900px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
-            gap: 28px;
+            gap: 24px;
+            width: 100%;
         }
 
-        /* Hero Performance Card */
-        .scorecard-hero {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-            color: white;
-            border-radius: 20px;
-            padding: 36px;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            overflow: hidden;
+        /* Hero Performance Header */
+        .hero-scorecard {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 32px 28px;
+            box-shadow: var(--shadow-card);
         }
 
-        .scorecard-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
-            border-radius: 50%;
-            pointer-events: none;
-        }
-
-        .hero-top {
+        .hero-top-bar {
             display: flex;
-            align-items: flex-start;
             justify-content: space-between;
-            margin-bottom: 28px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .exam-title-section h1 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 26px;
-            font-weight: 700;
-            color: #ffffff;
-            margin-bottom: 6px;
-        }
-
-        .exam-meta-line {
-            display: flex;
-            gap: 14px;
-            font-size: 13.5px;
-            color: #94a3b8;
-            flex-wrap: wrap;
-        }
-
-        .result-id-pill {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: #38bdf8;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        /* KPI Score Grid */
-        .score-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            align-items: flex-start;
             gap: 16px;
             margin-bottom: 24px;
         }
 
-        .stat-card {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 18px 20px;
-            transition: transform 0.2s ease;
-        }
-
-        .stat-card:hover {
-            background: rgba(255, 255, 255, 0.09);
-        }
-
-        .stat-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #94a3b8;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-family: 'Outfit', sans-serif;
-            font-size: 26px;
+        .exam-info-block h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 22px;
             font-weight: 700;
-            color: #ffffff;
+            color: var(--text-title);
+            letter-spacing: -0.4px;
+            margin-bottom: 4px;
         }
 
-        .stat-value small {
-            font-size: 14px;
-            color: #94a3b8;
-            font-weight: 500;
+        .exam-meta-text {
+            font-size: 13px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
-        /* Performance Feedback Banner */
-        .feedback-banner {
-            background: rgba(255, 255, 255, 0.08);
+        .perf-pill {
+            font-size: 11.5px;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: var(--radius-pill);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .pill-exc { background: var(--success-light); color: #15803d; border: 1px solid var(--success-border); }
+        .pill-good { background: var(--primary-light); color: #1d4ed8; border: 1px solid #bfdbfe; }
+        .pill-avg { background: var(--warning-light); color: #b45309; border: 1px solid #fde68a; }
+        .pill-low { background: var(--danger-light); color: #b91c1c; border: 1px solid var(--danger-border); }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: var(--surface-subtle);
             border-radius: 12px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            border-left: 4px solid #38bdf8;
+            padding: 16px 14px;
+            text-align: center;
         }
 
-        .feedback-badge {
-            background: #38bdf8;
-            color: #0f172a;
-            font-family: 'Outfit', sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
+        .stat-box-lbl {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-sub);
             text-transform: uppercase;
-            flex-shrink: 0;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
         }
 
-        .feedback-text {
-            font-size: 14px;
-            color: #e2e8f0;
-            line-height: 1.5;
+        .stat-box-val {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-title);
         }
 
-        /* Section Title */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .stat-box-val.score { color: var(--primary); }
+        .stat-box-val.correct { color: #15803d; }
+        .stat-box-val.wrong { color: #b91c1c; }
+
+        /* Question Breakdown */
+        .section-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-title);
             margin-top: 8px;
         }
 
-        .section-header h2 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .breakdown-summary {
-            display: flex;
-            gap: 12px;
-            font-size: 13px;
-            font-weight: 600;
-        }
-
-        .count-pill {
-            padding: 4px 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .count-pill.correct { background: var(--success-light); color: var(--success); }
-        .count-pill.incorrect { background: var(--danger-light); color: var(--danger); }
-        .count-pill.unanswered { background: #f1f5f9; color: var(--text-muted); }
-
-        /* Question Solution Cards */
-        .solution-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 26px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .solution-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .solution-q-num {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .solution-status-badge {
-            font-size: 12px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-correct {
-            background: var(--success-light);
-            color: #065f46;
-            border: 1px solid var(--success-border);
-        }
-
-        .status-incorrect {
-            background: var(--danger-light);
-            color: #991b1b;
-            border: 1px solid var(--danger-border);
-        }
-
-        .status-unanswered {
-            background: #f1f5f9;
-            color: #475569;
-            border: 1px solid var(--border);
-        }
-
-        .question-text-area {
-            font-size: 15.5px;
-            line-height: 1.6;
-            color: var(--text-main);
-            margin-bottom: 18px;
-        }
-
-        /* Result Options */
-        .result-options-list {
+        .review-card {
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 22px;
+            box-shadow: var(--shadow-card);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 18px;
+            gap: 14px;
         }
 
-        .result-option-row {
+        .review-header {
             display: flex;
-            align-items: flex-start;
-            gap: 12px;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1.5px solid var(--border);
-            background: #ffffff;
-            font-size: 14.5px;
-            line-height: 1.5;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
         }
 
-        .result-option-row.option-correct {
-            background: var(--success-light);
-            border-color: var(--success-border);
-            color: #065f46;
+        .q-badge-num {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 3px 9px;
+            border-radius: 6px;
+        }
+
+        .score-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+        }
+
+        .pill-mark-correct { background: var(--success-light); color: #15803d; }
+        .pill-mark-wrong { background: var(--danger-light); color: #b91c1c; }
+        .pill-mark-skip { background: var(--surface-subtle); color: var(--text-sub); }
+
+        .q-text-body {
+            font-size: 14.5px;
+            color: var(--text-title);
+            line-height: 1.55;
             font-weight: 500;
         }
 
-        .result-option-row.option-incorrect {
+        /* Option Review Rows */
+        .option-review-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .opt-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            font-size: 13.5px;
+            color: var(--text-body);
+        }
+
+        .opt-row.is-correct {
+            background: var(--success-light);
+            border-color: #bbf7d0;
+            color: #14532d;
+            font-weight: 600;
+        }
+
+        .opt-row.is-wrong-picked {
             background: var(--danger-light);
             border-color: var(--danger-border);
             color: #991b1b;
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        .opt-indicator {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
+        .opt-char-bubble {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 11.5px;
             font-weight: 700;
             flex-shrink: 0;
-            background: #f1f5f9;
-            color: #475569;
         }
 
-        .option-correct .opt-indicator {
-            background: var(--success);
-            color: white;
-        }
+        .is-correct .opt-char-bubble { background: #10b981; color: white; border-color: transparent; }
+        .is-wrong-picked .opt-char-bubble { background: #ef4444; color: white; border-color: transparent; }
 
-        .option-incorrect .opt-indicator {
-            background: var(--danger);
-            color: white;
-        }
-
-        .opt-tags {
+        .opt-status-tag {
             margin-left: auto;
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .pill-correct {
-            background: #10b981;
-            color: white;
             font-size: 11px;
             font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
+            padding: 2px 7px;
+            border-radius: 5px;
+            text-transform: uppercase;
         }
 
-        .pill-your-ans {
-            background: #ef4444;
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 2px 8px;
-            border-radius: 6px;
-        }
+        .tag-green { background: #10b981; color: white; }
+        .tag-red { background: #ef4444; color: white; }
 
         /* Explanation Box */
         .explanation-box {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 12px;
-            padding: 16px 18px;
-            margin-top: 14px;
+            background: var(--primary-light);
+            border: 1px solid #bfdbfe;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #1e40af;
+            line-height: 1.5;
         }
 
-        .explanation-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 13.5px;
+        .explanation-box h4 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-weight: 700;
-            color: #166534;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
         }
 
-        .explanation-content {
-            font-size: 14px;
-            color: #14532d;
-            line-height: 1.55;
-        }
-
-        /* Instructor Suggestions Card */
-        .instructor-feedback-card {
-            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-            border: 1.5px solid #cbd5e1;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .instructor-feedback-card h3 {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 10px;
+        /* Bottom Return Action */
+        .bottom-action-wrap {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            justify-content: center;
+            margin-top: 12px;
         }
 
-        .instructor-feedback-card p {
-            font-size: 14.5px;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        .btn-home {
+        .btn-dashboard-home {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 12px 24px;
+            gap: 7px;
+            padding: 12px 28px;
             background: var(--primary);
-            color: white;
-            text-decoration: none;
+            color: #ffffff;
             border-radius: 10px;
-            font-weight: 600;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 14.5px;
-            align-self: center;
-            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
-            transition: all 0.2s ease;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transition: all 0.15s ease;
         }
 
-        .btn-home:hover {
-            background: var(--primary-dark);
+        .btn-dashboard-home:hover {
+            background: var(--primary-hover);
             transform: translateY(-1px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-scorecard { padding: 22px 18px; }
+            .hero-top-bar { flex-direction: column; gap: 10px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-box-val { font-size: 18px; }
+            .review-card { padding: 18px 16px; }
         }
     </style>
 </head>
 <body>
 
-<!-- Watermark Elements -->
-<div class="watermark-container">
-    {% for i in "123456789012" %}
-        <div class="watermark">{{ request.user.username }} • {{ result.submitted_at|date:"d M Y" }}</div>
-    {% endfor %}
-</div>
+<div class="scorecard-container">
 
-<div class="report-wrapper">
     <!-- Hero Scorecard -->
-    <section class="scorecard-hero">
-        <div class="hero-top">
-            <div class="exam-title-section">
+    <header class="hero-scorecard">
+        <div class="hero-top-bar">
+            <div class="exam-info-block">
                 <h1>{{ exam.title }}</h1>
-                <div class="exam-meta-line">
+                <div class="exam-meta-text">
                     <span>Student: <strong>{{ request.user.username }}</strong></span>
                     <span>•</span>
                     <span>Submitted: <strong>{{ result.submitted_at|date:"d M Y, h:i A" }}</strong></span>
                 </div>
             </div>
-            <div class="result-id-pill">{{ result_id }}</div>
+            <span class="perf-pill
+                {% if percentage >= 80 %}pill-exc
+                {% elif percentage >= 60 %}pill-good
+                {% elif percentage >= 40 %}pill-avg
+                {% else %}pill-low{% endif %}">
+                {{ performance_level }}
+            </span>
         </div>
 
-        <div class="score-stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Score Obtained</div>
-                <div class="stat-value">{{ result.total_score }} <small>/ {{ exam.total_marks }}</small></div>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-box-lbl">Total Score</div>
+                <div class="stat-box-val score">{{ result.total_score }} <span style="font-size: 13px; color: var(--text-sub);">/ {{ exam.total_marks }}</span></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Percentage</div>
-                <div class="stat-value">{{ percentage }}%</div>
+            <div class="stat-box">
+                <div class="stat-box-lbl">Accuracy</div>
+                <div class="stat-box-val">{{ accuracy }}%</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Accuracy</div>
-                <div class="stat-value">{{ accuracy }}%</div>
+            <div class="stat-box">
+                <div class="stat-box-lbl">Correct Answers</div>
+                <div class="stat-box-val correct">{{ correct_count }} <span style="font-size: 13px; color: var(--text-sub);">/ {{ total_questions }}</span></div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Attempted</div>
-                <div class="stat-value">{{ attempted_count }} <small>/ {{ total_questions }}</small></div>
-            </div>
-        </div>
-
-        <div class="feedback-banner">
-            <span class="feedback-badge">{{ performance_level }}</span>
-            <span class="feedback-text">{{ performance_feedback }}</span>
-        </div>
-    </section>
-
-    {% if instructor_feedback %}
-        <div class="instructor-feedback-card">
-            <h3>
-                <svg style="width: 20px; height: 20px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                </svg>
-                Instructor's Remarks
-            </h3>
-            <p>{{ instructor_feedback }}</p>
-        </div>
-    {% endif %}
-
-    <!-- Solutions Review Header -->
-    <div class="section-header">
-        <h2>Question Analysis & Solutions</h2>
-        <div class="breakdown-summary">
-            <div class="count-pill correct">
-                <span>{{ correct_count }} Correct</span>
-            </div>
-            <div class="count-pill incorrect">
-                <span>{{ incorrect_count }} Incorrect</span>
-            </div>
-            <div class="count-pill unanswered">
-                <span>{{ unanswered_count }} Unanswered</span>
+            <div class="stat-box">
+                <div class="stat-box-lbl">Incorrect</div>
+                <div class="stat-box-val wrong">{{ incorrect_count }}</div>
             </div>
         </div>
-    </div>
+    </header>
 
-    <!-- Question Cards -->
-    {% for submission in submissions %}
-        <article class="solution-card">
-            <div class="solution-header">
-                <span class="solution-q-num">Question {{ forloop.counter }}</span>
-                {% if not submission.answer_text and not submission.answer_file %}
-                    <span class="solution-status-badge status-unanswered">Not Attempted (0 Marks)</span>
-                {% elif submission.marks_obtained == submission.question.marks %}
-                    <span class="solution-status-badge status-correct">Correct (+{{ submission.marks_obtained }} Marks)</span>
-                {% else %}
-                    <span class="solution-status-badge status-incorrect">Incorrect ({{ submission.marks_obtained }} Marks)</span>
-                {% endif %}
-            </div>
+    <!-- Detailed Question Review -->
+    <h2 class="section-heading">Question Breakdown & Solutions</h2>
 
-            <div class="question-text-area">
-                {{ submission.question.question_text|safe }}
-            </div>
-
-            {% if submission.question.question_image %}
-                <div style="margin-bottom: 16px;">
-                    <img src="{{ submission.question.question_image.url }}" style="max-width: 100%; border-radius: 8px; border: 1px solid var(--border);" alt="Question Diagram">
-                </div>
-            {% endif %}
-
-            <!-- Options Review for MCQ / MULTI -->
-            {% if submission.result_options %}
-                <div class="result-options-list">
-                    {% for opt in submission.result_options %}
-                        {% if opt.value %}
-                            <div class="result-option-row {{ opt.css_class }}">
-                                <span class="opt-indicator">
-                                    {% if opt.number == 1 %}A{% elif opt.number == 2 %}B{% elif opt.number == 3 %}C{% elif opt.number == 4 %}D{% else %}{{ opt.number }}{% endif %}
-                                </span>
-                                <div>{{ opt.value }}</div>
-                                <div class="opt-tags">
-                                    {% if opt.is_correct %}
-                                        <span class="pill-correct">Correct Option</span>
-                                    {% endif %}
-                                    {% if opt.is_selected and not opt.is_correct %}
-                                        <span class="pill-your-ans">Your Answer</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endfor %}
-                </div>
-            {% else %}
-                <div style="background: #f8fafc; padding: 14px 18px; border-radius: 10px; border: 1px solid var(--border); font-size: 14px; margin-bottom: 16px;">
-                    <strong>Your Response:</strong> {{ submission.answer_text|default:"(No answer submitted)" }}
-                    {% if submission.question.correct_answer %}
-                        <div style="margin-top: 6px; color: #166534;">
-                            <strong>Model Correct Answer:</strong> {{ submission.question.correct_answer }}
-                        </div>
+    {% for sub in submissions %}
+        <article class="review-card">
+            <div class="review-header">
+                <div class="q-badge-num">QUESTION {{ forloop.counter }}</div>
+                <div>
+                    {% if sub.marks_obtained == sub.question.marks %}
+                        <span class="score-pill pill-mark-correct">+{{ sub.marks_obtained }} Marks (Correct)</span>
+                    {% elif sub.marks_obtained < 0 %}
+                        <span class="score-pill pill-mark-wrong">{{ sub.marks_obtained }} Marks (Penalty)</span>
+                    {% elif sub.answer_text %}
+                        <span class="score-pill pill-mark-wrong">0 Marks (Incorrect)</span>
+                    {% else %}
+                        <span class="score-pill pill-mark-skip">0 Marks (Unanswered)</span>
                     {% endif %}
                 </div>
+            </div>
+
+            <div class="q-text-body">
+                {{ sub.question.question_text|safe }}
+            </div>
+
+            {% if sub.question.question_image %}
+                <div style="max-width: 450px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-light);">
+                    <img src="{{ sub.question.question_image.url }}" style="width: 100%; display: block;" alt="Question visual">
+                </div>
             {% endif %}
 
-            {% if submission.question.explanation %}
+            <!-- Options Review -->
+            {% if sub.result_options %}
+                <div class="option-review-stack">
+                    {% for opt in sub.result_options %}
+                        <div class="opt-row
+                            {% if opt.is_correct %}is-correct
+                            {% elif opt.is_selected and not opt.is_correct %}is-wrong-picked
+                            {% endif %}">
+                            <div class="opt-char-bubble">
+                                {% if forloop.counter == 1 %}A
+                                {% elif forloop.counter == 2 %}B
+                                {% elif forloop.counter == 3 %}C
+                                {% elif forloop.counter == 4 %}D{% endif %}
+                            </div>
+                            <span style="flex: 1;">{{ opt.value }}</span>
+                            {% if opt.is_correct and opt.is_selected %}
+                                <span class="opt-status-tag tag-green">Your Choice (Correct)</span>
+                            {% elif opt.is_correct %}
+                                <span class="opt-status-tag tag-green">Correct Answer</span>
+                            {% elif opt.is_selected %}
+                                <span class="opt-status-tag tag-red">Your Choice (Wrong)</span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% if sub.question.explanation %}
                 <div class="explanation-box">
-                    <div class="explanation-title">
-                        <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <h4>
+                        <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        Detailed Explanation
-                    </div>
-                    <div class="explanation-content">
-                        {{ submission.question.explanation|safe }}
-                    </div>
+                        <span>Explanation</span>
+                    </h4>
+                    <div>{{ sub.question.explanation|safe }}</div>
                 </div>
             {% endif %}
         </article>
     {% endfor %}
 
-    <a href="{% url 'logout' %}" class="btn-home">
-        <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-        </svg>
-        Finish & Logout
-    </a>
+    <!-- Bottom Action Button -->
+    <footer class="bottom-action-wrap">
+        <a href="{% url 'student_dashboard' %}" class="btn-dashboard-home">
+            <svg style="width: 17px; height: 17px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            <span>Return to Dashboard</span>
+        </a>
+    </footer>
+
 </div>
 
 </body>

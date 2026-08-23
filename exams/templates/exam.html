@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ exam.title }} - Assessment Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>{{ exam.title }} • Assessment</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 
-    <!-- MathJax -->
+    <!-- MathJax for formula rendering -->
     <script>
         MathJax = {
             tex: {
@@ -22,755 +22,623 @@
 
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --primary-light: #eff6ff;
-            --bg-page: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
+            --bg-canvas: #f8fafc;
+            --surface-card: #ffffff;
+            --surface-subtle: #f1f5f9;
+            --border-light: #e2e8f0;
             --border-hover: #cbd5e1;
+            --border-focus: #3b82f6;
+            --text-title: #0f172a;
+            --text-body: #334155;
+            --text-sub: #64748b;
+            --text-disabled: #94a3b8;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --primary-border: #bfdbfe;
             --success: #10b981;
             --success-light: #ecfdf5;
             --warning: #f59e0b;
             --warning-light: #fffbeb;
             --danger: #ef4444;
             --danger-light: #fef2f2;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+            --danger-border: #fecaca;
+            --radius-card: 16px;
+            --radius-lg: 12px;
+            --radius-pill: 30px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 14px -2px rgba(15, 23, 42, 0.04);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-page);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-canvas);
+            color: var(--text-body);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Top Sticky Navigation Bar */
+        /* Top Sticky Navbar */
         .exam-navbar {
             position: sticky;
             top: 0;
-            z-index: 50;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-            padding: 10px 16px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-light);
+            padding: 12px 24px;
             box-shadow: var(--shadow-sm);
         }
 
-        .navbar-container {
-            max-width: 1380px;
+        .navbar-inner {
+            max-width: 1200px;
             margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 12px;
+            gap: 16px;
         }
 
-        .exam-info {
+        .brand-meta {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             min-width: 0;
-            flex: 1;
         }
 
-        .exam-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, #2563eb, #4f46e5);
+        .brand-badge {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
             flex-shrink: 0;
             box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
         }
 
-        .exam-icon svg {
+        .brand-badge svg {
             width: 20px;
             height: 20px;
+            color: #ffffff;
         }
 
-        .exam-title-group {
-            min-width: 0;
-            flex: 1;
-        }
-
-        .exam-title-group h1 {
-            font-family: 'Outfit', sans-serif;
+        .exam-info h1 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 16px;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--text-title);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.2;
+            max-width: 360px;
         }
 
-        .exam-meta-badges {
-            display: flex;
-            gap: 6px;
-            margin-top: 2px;
-            flex-wrap: wrap;
+        .exam-info span {
+            font-size: 12px;
+            color: var(--text-sub);
         }
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 1px 6px;
-            border-radius: 6px;
-        }
-
-        .badge-primary {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-
-        .badge-neutral {
-            background: #f1f5f9;
-            color: var(--text-muted);
-        }
-
-        .badge-admin {
-            background: #e0e7ff;
-            color: #4338ca;
-        }
-
-        /* Timer Widget */
-        .timer-widget {
+        /* Apple-Style Countdown Timer */
+        .timer-badge {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #0f172a;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-md);
-            flex-shrink: 0;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-light);
+            padding: 6px 14px;
+            border-radius: var(--radius-pill);
+            transition: all 0.2s ease;
         }
 
-        .timer-icon {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #38bdf8;
+        .timer-badge.warning {
+            background: var(--warning-light);
+            border-color: #fde68a;
+            color: #b45309;
         }
 
-        .timer-icon svg {
+        .timer-badge.danger {
+            background: var(--danger-light);
+            border-color: var(--danger-border);
+            color: #b91c1c;
+            animation: timer-pulse 1.5s infinite;
+        }
+
+        @keyframes timer-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
+
+        .timer-badge svg {
             width: 16px;
             height: 16px;
+            color: var(--primary);
         }
 
-        .timer-content {
-            display: flex;
-            flex-direction: column;
-        }
+        .timer-badge.warning svg { color: var(--warning); }
+        .timer-badge.danger svg { color: var(--danger); }
 
-        .timer-label {
-            font-size: 9.5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #94a3b8;
-            font-weight: 600;
-            display: none;
-        }
-
-        .timer-display {
+        .timer-text {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
-            color: #ffffff;
             letter-spacing: 0.5px;
         }
 
-        @media (min-width: 640px) {
-            .exam-navbar { padding: 12px 24px; }
-            .exam-icon { width: 42px; height: 42px; }
-            .exam-icon svg { width: 22px; height: 22px; }
-            .exam-title-group h1 { font-size: 18px; }
-            .timer-widget { padding: 8px 16px; gap: 12px; border-radius: 12px; }
-            .timer-icon svg { width: 20px; height: 20px; }
-            .timer-label { display: block; }
-            .timer-display { font-size: 19px; }
-        }
-
-        .timer-widget.warning {
-            background: #78350f;
-            border: 1px solid #b45309;
-        }
-
-        .timer-widget.danger {
-            background: #7f1d1d;
-            border: 1px solid #dc2626;
-            animation: pulse-danger 1.5s infinite;
-        }
-
-        @keyframes pulse-danger {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-            50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-        }
-
-        /* Main Container Layout */
-        .main-wrapper {
-            max-width: 1380px;
-            margin: 16px auto;
-            padding: 0 16px;
-            width: 100%;
+        /* Main Workspace Layout */
+        .exam-workspace {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 20px 80px;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 320px;
-            gap: 20px;
-            align-items: start;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+            flex: 1;
+            width: 100%;
         }
 
-        @media (min-width: 1025px) {
-            .main-wrapper {
-                margin: 24px auto;
-                padding: 0 24px;
-                gap: 28px;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .main-wrapper {
-                grid-template-columns: 1fr;
-                padding-bottom: 30px;
-            }
-        }
-
-        /* Questions Stream */
+        /* Question Stream */
         .questions-stream {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 18px;
         }
 
-        @media (min-width: 640px) {
-            .questions-stream {
-                gap: 24px;
-            }
-        }
-
-        /* Question Card */
         .question-card {
-            background: var(--card-bg);
-            border-radius: 14px;
-            border: 1px solid var(--border);
-            padding: 18px 16px;
-            box-shadow: var(--shadow-sm);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
+            background: var(--surface-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 26px;
+            box-shadow: var(--shadow-card);
+            scroll-margin-top: 80px;
+            transition: border-color 0.2s ease;
         }
 
-        @media (min-width: 640px) {
-            .question-card {
-                border-radius: 16px;
-                padding: 28px;
-            }
+        .question-card:focus-within {
+            border-color: var(--border-focus);
         }
 
-        .question-card:hover {
-            border-color: var(--border-hover);
-            box-shadow: var(--shadow-md);
-        }
-
-        .question-card.active-target {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .question-header {
+        .q-header-row {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 18px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid var(--border);
+            align-items: center;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
         }
 
-        .question-number-badge {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
+        .q-tag-num {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12.5px;
             font-weight: 700;
             color: var(--primary);
+            background: var(--primary-light);
+            border: 1px solid var(--primary-border);
+            padding: 3px 10px;
+            border-radius: var(--radius-pill);
+        }
+
+        .q-meta-badges {
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .question-badges {
-            display: flex;
-            gap: 8px;
-        }
-
-        .badge-type {
-            background: #f1f5f9;
-            color: #334155;
+        .q-type-pill {
             font-size: 11.5px;
-            padding: 4px 10px;
-            border-radius: 6px;
             font-weight: 600;
-        }
-
-        .badge-marks {
-            background: #f0fdf4;
-            color: #166534;
-            font-size: 11.5px;
-            padding: 4px 10px;
+            color: var(--text-sub);
+            background: var(--surface-subtle);
+            padding: 3px 8px;
             border-radius: 6px;
-            font-weight: 600;
         }
 
-        .question-body {
-            font-size: 16px;
-            line-height: 1.65;
-            color: var(--text-main);
-            margin-bottom: 20px;
+        .q-marks-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            color: #15803d;
+            background: var(--success-light);
+            border: 1px solid #bbf7d0;
+            padding: 3px 8px;
+            border-radius: 6px;
         }
 
-        .question-image-container {
-            margin: 16px 0;
-            border-radius: 12px;
+        .q-prompt-text {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-title);
+            line-height: 1.6;
+            margin-bottom: 18px;
+        }
+
+        .q-img-wrapper {
+            margin-bottom: 18px;
+            border-radius: var(--radius-lg);
             overflow: hidden;
-            border: 1px solid var(--border);
-            max-width: 100%;
-            background: #f8fafc;
-            display: inline-block;
+            border: 1px solid var(--border-light);
+            max-width: 480px;
         }
 
-        .question-image-container img {
-            max-width: 100%;
-            height: auto;
+        .q-img-wrapper img {
+            width: 100%;
             display: block;
         }
 
-        /* Options Grid / List */
+        /* Option Items */
         .options-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 16px;
+            gap: 9px;
         }
 
-        .option-label {
+        .option-choice {
+            position: relative;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 12px;
-            padding: 12px 14px;
+            padding: 13px 16px;
             background: #ffffff;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
+            border: 1.5px solid var(--border-light);
+            border-radius: var(--radius-lg);
             cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-            min-height: 48px;
-            -webkit-tap-highlight-color: transparent;
+            transition: all 0.15s ease;
         }
 
-        @media (min-width: 640px) {
-            .option-label {
-                gap: 14px;
-                padding: 14px 18px;
-            }
+        .option-choice:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-subtle);
         }
 
-        .option-label:hover {
-            background: #f8fafc;
-            border-color: #94a3b8;
-        }
-
-        .option-input {
-            margin-top: 3px;
-            accent-color: var(--primary);
-            width: 20px;
-            height: 20px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .option-label.checked {
+        .option-choice.selected {
             background: var(--primary-light);
             border-color: var(--primary);
             box-shadow: 0 0 0 1px var(--primary);
         }
 
-        .option-letter {
-            width: 26px;
-            height: 26px;
-            border-radius: 6px;
-            background: #f1f5f9;
-            color: #475569;
+        .option-choice input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .option-letter-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-light);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 12.5px;
             font-weight: 700;
+            color: var(--text-sub);
             flex-shrink: 0;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
-        .option-label.checked .option-letter {
+        .option-choice.selected .option-letter-circle {
             background: var(--primary);
-            color: white;
+            color: #ffffff;
+            border-color: transparent;
         }
 
-        .option-content {
-            font-size: 15px;
-            color: var(--text-main);
-            line-height: 1.5;
-            flex-grow: 1;
+        .option-text-val {
+            font-size: 14.5px;
+            color: var(--text-body);
+            line-height: 1.45;
+            flex: 1;
         }
 
-        .option-img {
+        .option-choice.selected .option-text-val {
+            color: var(--text-title);
+            font-weight: 600;
+        }
+
+        .btn-clear {
             margin-top: 10px;
-            max-width: 100%;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-            display: block;
-        }
-
-        /* Mobile Fixed Floating Bottom Bar */
-        .mobile-bottom-bar {
-            display: none;
-        }
-
-        @media (max-width: 1024px) {
-            .mobile-bottom-bar {
-                display: flex;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.96);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                border-top: 1px solid var(--border);
-                padding: 10px 16px;
-                z-index: 40;
-                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
-                align-items: center;
-                justify-content: space-between;
-                gap: 12px;
-            }
-
-            .mobile-btn-palette {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                padding: 10px 14px;
-                border: 1px solid var(--border);
-                border-radius: 10px;
-                background: white;
-                color: var(--text-main);
-                font-weight: 600;
-                font-size: 13.5px;
-                cursor: pointer;
-                text-decoration: none;
-            }
-
-            .mobile-btn-submit {
-                flex: 1;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                padding: 10px 14px;
-                border: none;
-                border-radius: 10px;
-                background: linear-gradient(135deg, #10b981, #059669);
-                color: white;
-                font-weight: 700;
-                font-size: 14px;
-                cursor: pointer;
-                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
-            }
-
-            .palette-sidebar {
-                margin-bottom: 70px;
-            }
-        }
-
-        /* Non-MCQ Inputs */
-        .text-input-field {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 15px;
-            border: 1.5px solid var(--border);
-            border-radius: 10px;
-            background: white;
-            color: var(--text-main);
-            font-family: inherit;
-            outline: none;
-            transition: all 0.2s ease;
-        }
-
-        .text-input-field:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px var(--primary-light);
-        }
-
-        .file-upload-box {
-            border: 2px dashed var(--border);
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            background: #f8fafc;
-            transition: border-color 0.2s ease;
-        }
-
-        .file-upload-box:hover {
-            border-color: var(--primary);
-        }
-
-        .clear-answer-btn {
             background: transparent;
             border: none;
-            color: var(--text-muted);
-            font-size: 12.5px;
-            font-weight: 600;
+            color: var(--text-sub);
+            font-size: 12px;
+            font-weight: 500;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-            margin-top: 10px;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            transition: color 0.2s ease;
+            gap: 5px;
+            padding: 3px 6px;
+            border-radius: 6px;
         }
 
-        .clear-answer-btn:hover {
+        .btn-clear:hover {
             color: var(--danger);
+            background: var(--danger-light);
         }
 
-        /* Palette Sticky Sidebar */
-        .palette-sidebar {
+        /* Sidebar Palette */
+        .sidebar-palette-card {
             position: sticky;
-            top: 84px;
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: var(--shadow-sm);
+            top: 76px;
+            height: fit-content;
+            background: var(--surface-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-card);
+            padding: 20px;
+            box-shadow: var(--shadow-card);
         }
 
-        .palette-header {
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 14px;
+        .palette-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-light);
         }
 
-        .palette-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 18px;
-            padding-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+        .palette-heading {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-title);
         }
 
-        .stat-badge {
+        .palette-stat-chip {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .palette-legend-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            font-size: 11.5px;
+            color: var(--text-sub);
+        }
+
+        .legend-chip {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 12.5px;
-            font-weight: 500;
-            color: var(--text-muted);
+            gap: 5px;
         }
 
-        .stat-dot {
-            width: 10px;
-            height: 10px;
+        .legend-indicator {
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            flex-shrink: 0;
         }
 
-        .dot-answered {
-            background: var(--success);
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
-        }
+        .ind-answered { background: var(--primary); }
+        .ind-pending { background: #cbd5e1; }
 
-        .dot-unanswered {
-            background: #cbd5e1;
-        }
-
-        .palette-grid {
+        .palette-buttons-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            max-height: 340px;
+            gap: 7px;
+            margin-bottom: 18px;
+            max-height: 260px;
             overflow-y: auto;
-            padding-right: 4px;
-            margin-bottom: 22px;
+            padding-right: 2px;
         }
 
-        .palette-btn {
+        .p-btn {
             aspect-ratio: 1;
-            background: #f8fafc;
-            border: 1.5px solid var(--border);
-            border-radius: 8px;
-            color: #475569;
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
+            border: 1px solid var(--border-light);
+            border-radius: 9px;
+            background: var(--surface-subtle);
+            color: var(--text-sub);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.15s ease;
-            text-decoration: none;
         }
 
-        .palette-btn:hover {
-            background: #e2e8f0;
-            border-color: #94a3b8;
+        .p-btn:hover {
+            border-color: var(--border-hover);
+            background: #ffffff;
+            color: var(--text-title);
         }
 
-        .palette-btn.answered {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.25);
+        .p-btn.answered {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: transparent;
         }
 
-        .palette-btn.current {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px var(--primary-light);
-        }
-
-        /* Submit Button */
-        .btn-submit-exam {
+        .btn-finish-exam {
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
+            padding: 12px;
+            background: var(--primary);
+            color: #ffffff;
             border: none;
-            border-radius: 12px;
-            font-family: 'Outfit', sans-serif;
-            font-size: 16px;
-            font-weight: 700;
+            border-radius: var(--radius-lg);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 14.5px;
+            font-weight: 600;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 7px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+            transition: all 0.15s ease;
         }
 
-        .btn-submit-exam:hover {
-            background: linear-gradient(135deg, #059669, #047857);
+        .btn-finish-exam:hover {
+            background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
         }
 
-        /* Modal */
-        .modal-overlay {
+        /* Mobile Floating Bottom Bar */
+        .mobile-bottom-actions {
+            display: none;
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100vw;
-            height: 100vh;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border-light);
+            padding: 10px 16px;
+            z-index: 90;
+            box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+        }
+
+        .mobile-bar-content {
+            display: flex;
+            gap: 10px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .btn-mob-jump {
+            flex: 1;
+            padding: 11px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border-light);
+            border-radius: 10px;
+            color: var(--text-title);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .btn-mob-submit {
+            flex: 1.2;
+            padding: 11px;
+            background: var(--primary);
+            border: none;
+            border-radius: 10px;
+            color: #ffffff;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* Modal Dialog */
+        .modal-overlay {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 200;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            animation: modal-fade 0.2s ease;
         }
 
-        .modal-card {
-            background: white;
-            border-radius: 20px;
-            max-width: 460px;
+        @keyframes modal-fade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-box {
+            background: #ffffff;
+            border-radius: var(--radius-card);
+            padding: 28px 24px;
+            max-width: 400px;
             width: 100%;
-            padding: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
             text-align: center;
+            box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.15);
         }
 
-        .modal-icon {
-            width: 60px;
-            height: 60px;
+        .modal-icon-badge {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
-            background: #eff6ff;
-            color: var(--primary);
-            display: inline-flex;
+            margin: 0 auto 14px;
+            display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 16px;
         }
 
-        .modal-icon svg {
-            width: 32px;
-            height: 32px;
-        }
-
-        .modal-title {
-            font-family: 'Outfit', sans-serif;
-            font-size: 20px;
+        .modal-box h3 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 18px;
             font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
+            color: var(--text-title);
+            margin-bottom: 6px;
         }
 
-        .modal-text {
-            font-size: 14.5px;
-            color: var(--text-muted);
-            margin-bottom: 24px;
+        .modal-box p {
+            color: var(--text-sub);
+            font-size: 13.5px;
             line-height: 1.5;
+            margin-bottom: 20px;
         }
 
-        .modal-actions {
+        .modal-btn-row {
             display: flex;
-            gap: 12px;
+            gap: 8px;
         }
 
         .btn-modal-cancel {
             flex: 1;
-            padding: 12px;
-            border: 1.5px solid var(--border);
-            background: white;
-            color: #475569;
+            padding: 10.5px;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
             border-radius: 10px;
+            color: var(--text-body);
             font-weight: 600;
-            font-size: 14.5px;
+            font-size: 13.5px;
             cursor: pointer;
         }
 
-        .btn-modal-confirm {
-            flex: 1;
-            padding: 12px;
+        .btn-modal-submit-now {
+            flex: 1.2;
+            padding: 10.5px;
+            background: var(--primary);
             border: none;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
             border-radius: 10px;
+            color: #ffffff;
             font-weight: 600;
-            font-size: 14.5px;
+            font-size: 13.5px;
             cursor: pointer;
+        }
+
+        @media (max-width: 992px) {
+            .exam-workspace { grid-template-columns: 1fr; }
+            .sidebar-palette-card { display: none; }
+            .mobile-bottom-actions { display: block; }
+            .exam-info h1 { max-width: 200px; font-size: 14.5px; }
+            .question-card { padding: 18px 16px; }
+            .option-choice { padding: 11px 12px; min-height: 48px; }
         }
     </style>
 </head>
@@ -778,376 +646,322 @@
 
 <!-- Navbar -->
 <header class="exam-navbar">
-    <div class="navbar-container">
-        <div class="exam-info">
-            <div class="exam-icon">
+    <div class="navbar-inner">
+        <div class="brand-meta">
+            <div class="brand-badge">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             </div>
-            <div class="exam-title-group">
+            <div class="exam-info">
                 <h1>{{ exam.title }}</h1>
-                <div class="exam-meta-badges">
-                    <span class="badge badge-primary">{{ questions|length }} Questions</span>
-                    <span class="badge badge-neutral">Total Marks: {{ exam.total_marks }}</span>
-                    {% if is_admin %}
-                        <span class="badge badge-admin">Preview Mode</span>
-                    {% endif %}
-                </div>
+                <span>{{ questions|length }} Questions • {{ exam.total_marks }} Marks</span>
             </div>
         </div>
 
-        {% if is_admin %}
-            <div class="timer-widget" style="background: #312e81;">
-                <div class="timer-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                </div>
-                <div class="timer-content">
-                    <span class="timer-label">Administrator</span>
-                    <span class="timer-display" style="font-size: 14px;">Preview Mode</span>
-                </div>
-            </div>
-        {% else %}
-            <div class="timer-widget" id="timer-box">
-                <div class="timer-icon">
-                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-                <div class="timer-content">
-                    <span class="timer-label">Time Remaining</span>
-                    <span class="timer-display" id="timer">--:--</span>
-                </div>
-            </div>
-        {% endif %}
+        <div class="timer-badge" id="timerBadge">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="timer-text" id="timerText">--:--</span>
+        </div>
     </div>
 </header>
 
-<!-- Main Exam Interface -->
-<main class="main-wrapper">
-    <form method="POST" enctype="multipart/form-data" id="examForm" class="questions-stream">
+<!-- Examination Workspace -->
+<main class="exam-workspace">
+
+    <!-- Questions Form -->
+    <form method="POST" id="examForm" class="questions-stream">
         {% csrf_token %}
 
-        {% if exam.description %}
-            <div style="background: white; border-radius: 12px; padding: 16px 20px; border: 1px solid var(--border); font-size: 14.5px; color: var(--text-muted);">
-                <strong style="color: var(--text-main);">Instructions:</strong> {{ exam.description }}
-            </div>
-        {% endif %}
-
         {% for question in questions %}
-            <article class="question-card" id="q-card-{{ question.id }}" data-qid="{{ question.id }}">
-                <div class="question-header">
-                    <div class="question-number-badge">
-                        <span>Question {{ forloop.counter }}</span>
-                    </div>
-                    <div class="question-badges">
-                        <span class="badge-type">
+            <article class="question-card" id="q-card-{{ question.id }}">
+                <div class="q-header-row">
+                    <div class="q-tag-num">QUESTION {{ forloop.counter }}</div>
+                    <div class="q-meta-badges">
+                        <span class="q-type-pill">
                             {% if question.question_type == "MCQ" %}Single Choice
-                            {% elif question.question_type == "MULTI" %}Multiple Correct
-                            {% elif question.question_type == "NUM" %}Numerical
-                            {% elif question.question_type == "SHORT" %}Short Answer
-                            {% elif question.question_type == "LONG" %}Long Answer
-                            {% elif question.question_type == "UPLOAD" %}File Upload
+                            {% elif question.question_type == "MULTI" %}Multiple Choice
                             {% else %}{{ question.question_type }}{% endif %}
                         </span>
-                        <span class="badge-marks">+{{ question.marks }} Mark{% if question.marks > 1 %}s{% endif %}</span>
+                        <span class="q-marks-pill">+{{ question.marks }} Mark{% if question.marks > 1 %}s{% endif %}</span>
                     </div>
                 </div>
 
-                <div class="question-body">
+                <div class="q-prompt-text">
                     {{ question.question_text|safe }}
                 </div>
 
                 {% if question.question_image %}
-                    <div class="question-image-container">
-                        <img src="{{ question.question_image.url }}" alt="Question Image">
+                    <div class="q-img-wrapper">
+                        <img src="{{ question.question_image.url }}" alt="Question Diagram">
                     </div>
                 {% endif %}
 
-                <!-- Options Render -->
+                <!-- MCQ Options -->
                 {% if question.question_type == "MCQ" %}
                     <div class="options-list">
                         {% if question.option1 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-1">
-                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="1" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">A</span>
-                                <div class="option-content">
-                                    {{ question.option1 }}
-                                    {% if question.option1_image %}
-                                        <img src="{{ question.option1_image.url }}" class="option-img" alt="Option A Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-1">
+                                <input type="radio" name="question_{{ question.id }}" value="1" onchange="pickOption({{ question.id }}, '1')">
+                                <div class="option-letter-circle">A</div>
+                                <div class="option-text-val">{{ question.option1 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option2 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-2">
-                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="2" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">B</span>
-                                <div class="option-content">
-                                    {{ question.option2 }}
-                                    {% if question.option2_image %}
-                                        <img src="{{ question.option2_image.url }}" class="option-img" alt="Option B Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-2">
+                                <input type="radio" name="question_{{ question.id }}" value="2" onchange="pickOption({{ question.id }}, '2')">
+                                <div class="option-letter-circle">B</div>
+                                <div class="option-text-val">{{ question.option2 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option3 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-3">
-                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="3" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">C</span>
-                                <div class="option-content">
-                                    {{ question.option3 }}
-                                    {% if question.option3_image %}
-                                        <img src="{{ question.option3_image.url }}" class="option-img" alt="Option C Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-3">
+                                <input type="radio" name="question_{{ question.id }}" value="3" onchange="pickOption({{ question.id }}, '3')">
+                                <div class="option-letter-circle">C</div>
+                                <div class="option-text-val">{{ question.option3 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option4 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-4">
-                                <input type="radio" class="option-input" name="question_{{ question.id }}" value="4" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">D</span>
-                                <div class="option-content">
-                                    {{ question.option4 }}
-                                    {% if question.option4_image %}
-                                        <img src="{{ question.option4_image.url }}" class="option-img" alt="Option D Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-4">
+                                <input type="radio" name="question_{{ question.id }}" value="4" onchange="pickOption({{ question.id }}, '4')">
+                                <div class="option-letter-circle">D</div>
+                                <div class="option-text-val">{{ question.option4 }}</div>
                             </label>
                         {% endif %}
                     </div>
-                    <button type="button" class="clear-answer-btn" onclick="clearSelection('question_{{ question.id }}', {{ question.id }})">
-                        <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" class="btn-clear" onclick="resetChoice({{ question.id }})">
+                        <svg style="width: 13px; height: 13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        Clear response
+                        <span>Clear response</span>
                     </button>
 
+                <!-- MULTI Options -->
                 {% elif question.question_type == "MULTI" %}
                     <div class="options-list">
                         {% if question.option1 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-1">
-                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="1" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">A</span>
-                                <div class="option-content">
-                                    {{ question.option1 }}
-                                    {% if question.option1_image %}
-                                        <img src="{{ question.option1_image.url }}" class="option-img" alt="Option A Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-1">
+                                <input type="checkbox" name="question_{{ question.id }}" value="1" onchange="pickMultiOption({{ question.id }})">
+                                <div class="option-letter-circle">A</div>
+                                <div class="option-text-val">{{ question.option1 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option2 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-2">
-                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="2" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">B</span>
-                                <div class="option-content">
-                                    {{ question.option2 }}
-                                    {% if question.option2_image %}
-                                        <img src="{{ question.option2_image.url }}" class="option-img" alt="Option B Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-2">
+                                <input type="checkbox" name="question_{{ question.id }}" value="2" onchange="pickMultiOption({{ question.id }})">
+                                <div class="option-letter-circle">B</div>
+                                <div class="option-text-val">{{ question.option2 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option3 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-3">
-                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="3" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">C</span>
-                                <div class="option-content">
-                                    {{ question.option3 }}
-                                    {% if question.option3_image %}
-                                        <img src="{{ question.option3_image.url }}" class="option-img" alt="Option C Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-3">
+                                <input type="checkbox" name="question_{{ question.id }}" value="3" onchange="pickMultiOption({{ question.id }})">
+                                <div class="option-letter-circle">C</div>
+                                <div class="option-text-val">{{ question.option3 }}</div>
                             </label>
                         {% endif %}
-
                         {% if question.option4 %}
-                            <label class="option-label" id="opt-label-{{ question.id }}-4">
-                                <input type="checkbox" class="option-input" name="question_{{ question.id }}" value="4" onchange="handleOptionChange({{ question.id }})">
-                                <span class="option-letter">D</span>
-                                <div class="option-content">
-                                    {{ question.option4 }}
-                                    {% if question.option4_image %}
-                                        <img src="{{ question.option4_image.url }}" class="option-img" alt="Option D Image">
-                                    {% endif %}
-                                </div>
+                            <label class="option-choice" id="opt-{{ question.id }}-4">
+                                <input type="checkbox" name="question_{{ question.id }}" value="4" onchange="pickMultiOption({{ question.id }})">
+                                <div class="option-letter-circle">D</div>
+                                <div class="option-text-val">{{ question.option4 }}</div>
                             </label>
                         {% endif %}
                     </div>
-                    <button type="button" class="clear-answer-btn" onclick="clearSelection('question_{{ question.id }}', {{ question.id }})">
-                        <svg style="width: 14px; height: 14px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <button type="button" class="btn-clear" onclick="resetChoice({{ question.id }})">
+                        <svg style="width: 13px; height: 13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        Clear responses
+                        <span>Clear responses</span>
                     </button>
-
-                {% elif question.question_type == "NUM" %}
-                    <div style="margin-top: 14px;">
-                        <input type="text" name="question_{{ question.id }}" class="text-input-field" placeholder="Enter numerical answer" oninput="handleOptionChange({{ question.id }})">
-                    </div>
-
-                {% elif question.question_type == "SHORT" %}
-                    <div style="margin-top: 14px;">
-                        <input type="text" name="question_{{ question.id }}" class="text-input-field" placeholder="Type your short answer here" oninput="handleOptionChange({{ question.id }})">
-                    </div>
-
-                {% elif question.question_type == "LONG" %}
-                    <div style="margin-top: 14px;">
-                        <textarea name="question_{{ question.id }}" class="text-input-field" rows="5" placeholder="Type your detailed response here..." oninput="handleOptionChange({{ question.id }})"></textarea>
-                    </div>
-
-                {% elif question.question_type == "UPLOAD" %}
-                    <div class="file-upload-box" style="margin-top: 14px;">
-                        <input type="file" name="question_{{ question.id }}" onchange="handleOptionChange({{ question.id }})">
-                    </div>
                 {% endif %}
             </article>
         {% endfor %}
     </form>
 
-    <!-- Side Question Palette -->
-    <aside class="palette-sidebar">
-        <div class="palette-header">
-            <span>Question Palette</span>
-            <span id="answeredCounter" style="font-size: 13px; font-weight: 600; color: var(--primary);">0 / {{ questions|length }}</span>
+    <!-- Sidebar Palette -->
+    <aside class="sidebar-palette-card">
+        <div class="palette-top">
+            <span class="palette-heading">Questions</span>
+            <span class="palette-stat-chip" id="answeredCount">0 / {{ questions|length }}</span>
         </div>
 
-        <div class="palette-stats">
-            <div class="stat-badge">
-                <div class="stat-dot dot-answered"></div>
+        <div class="palette-legend-row">
+            <div class="legend-chip">
+                <div class="legend-indicator ind-answered"></div>
                 <span>Answered</span>
             </div>
-            <div class="stat-badge">
-                <div class="stat-dot dot-unanswered"></div>
-                <span>Not Answered</span>
+            <div class="legend-chip">
+                <div class="legend-indicator ind-pending"></div>
+                <span>Pending</span>
             </div>
         </div>
 
-        <div class="palette-grid">
+        <div class="palette-buttons-grid">
             {% for question in questions %}
-                <button type="button" class="palette-btn" id="pbtn-{{ question.id }}" onclick="scrollToQuestion({{ question.id }})">
+                <button type="button" class="p-btn" id="pbtn-{{ question.id }}" onclick="scrollToQuestion({{ question.id }})">
                     {{ forloop.counter }}
                 </button>
             {% endfor %}
         </div>
 
-        {% if not is_admin %}
-            <button type="button" class="btn-submit-exam" onclick="openSubmitModal()">
-                <svg style="width: 18px; height: 18px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-                Submit Exam
-            </button>
-        {% endif %}
+        <button type="button" class="btn-finish-exam" onclick="openSubmitModal()">
+            <svg style="width: 17px; height: 17px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <span>Submit Exam</span>
+        </button>
     </aside>
+
 </main>
 
-{% if not is_admin %}
-<!-- Mobile Fixed Floating Action Bar -->
-<div class="mobile-bottom-bar">
-    <button type="button" class="mobile-btn-palette" onclick="document.querySelector('.palette-sidebar').scrollIntoView({behavior: 'smooth'})">
-        <svg style="width: 16px; height: 16px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-        </svg>
-        <span id="mobileAnsweredCounter">0 / {{ questions|length }}</span>
-    </button>
-    <button type="button" class="mobile-btn-submit" onclick="openSubmitModal()">
-        <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-        </svg>
-        Submit Exam
-    </button>
+<!-- Mobile Bottom Bar -->
+<div class="mobile-bottom-actions">
+    <div class="mobile-bar-content">
+        <button type="button" class="btn-mob-jump" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
+            <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+            </svg>
+            <span id="mobileCountText">0 / {{ questions|length }} Done</span>
+        </button>
+        <button type="button" class="btn-mob-submit" onclick="openSubmitModal()">
+            <span>Submit Exam</span>
+            <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+        </button>
+    </div>
 </div>
-{% endif %}
 
 <!-- Submit Confirmation Modal -->
 <div class="modal-overlay" id="submitModal">
-    <div class="modal-card">
-        <div class="modal-icon">
-            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    <div class="modal-box">
+        <div class="modal-icon-badge" style="background: var(--primary-light); color: var(--primary);">
+            <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
         </div>
-        <h3 class="modal-title">Ready to Submit?</h3>
-        <p class="modal-text" id="modalStatsText">You have answered all questions. Once submitted, your answers cannot be altered.</p>
-        <div class="modal-actions">
+        <h3>Submit Examination?</h3>
+        <p id="modalMsg">Are you sure you want to finalize your submission?</p>
+        <div class="modal-btn-row">
             <button type="button" class="btn-modal-cancel" onclick="closeSubmitModal()">Review Questions</button>
-            <button type="button" class="btn-modal-confirm" onclick="confirmSubmit()">Confirm & Submit</button>
+            <button type="button" class="btn-modal-submit-now" onclick="confirmSubmit()">Confirm & Submit</button>
         </div>
     </div>
 </div>
 
-{% if not is_admin %}
 <script>
-    /* Timer Engine */
-    const examEndTimeStr = "{{ exam_end_time }}";
-    const durationMinutes = {{ exam.duration }};
-    const examId = {{ exam.id }};
-    const timerElem = document.getElementById("timer");
-    const timerBox = document.getElementById("timer-box");
-
-    function getTargetTime() {
-        if (examEndTimeStr) {
-            return new Date(examEndTimeStr).getTime();
-        }
-        const storageKey = `exam_target_${examId}`;
-        let savedTarget = localStorage.getItem(storageKey);
-        if (!savedTarget) {
-            savedTarget = Date.now() + (durationMinutes * 60 * 1000);
-            localStorage.setItem(storageKey, savedTarget);
-        }
-        return parseInt(savedTarget, 10);
+    /* Selection Handlers */
+    function pickOption(qId, val) {
+        const card = document.getElementById(`q-card-${qId}`);
+        const labels = card.querySelectorAll('.option-choice');
+        labels.forEach(l => l.classList.remove('selected'));
+        const activeLabel = document.getElementById(`opt-${qId}-${val}`);
+        if (activeLabel) activeLabel.classList.add('selected');
+        refreshPalette(qId, true);
     }
 
-    const targetTime = getTargetTime();
+    function pickMultiOption(qId) {
+        const card = document.getElementById(`q-card-${qId}`);
+        const checked = card.querySelectorAll('input:checked');
+        const labels = card.querySelectorAll('.option-choice');
+        labels.forEach(l => {
+            const input = l.querySelector('input');
+            if (input && input.checked) l.classList.add('selected');
+            else l.classList.remove('selected');
+        });
+        refreshPalette(qId, checked.length > 0);
+    }
 
-    function updateTimer() {
+    function resetChoice(qId) {
+        const card = document.getElementById(`q-card-${qId}`);
+        const inputs = card.querySelectorAll('input');
+        inputs.forEach(i => i.checked = false);
+        const labels = card.querySelectorAll('.option-choice');
+        labels.forEach(l => l.classList.remove('selected'));
+        refreshPalette(qId, false);
+    }
+
+    function refreshPalette(qId, isDone) {
+        const pBtn = document.getElementById(`pbtn-${qId}`);
+        if (pBtn) {
+            if (isDone) pBtn.classList.add('answered');
+            else pBtn.classList.remove('answered');
+        }
+        recalculateTotals();
+    }
+
+    function recalculateTotals() {
+        const total = {{ questions|length }};
+        const done = document.querySelectorAll('.p-btn.answered').length;
+        const countBadge = document.getElementById('answeredCount');
+        if (countBadge) countBadge.innerText = `${done} / ${total}`;
+        const mobBadge = document.getElementById('mobileCountText');
+        if (mobBadge) mobBadge.innerText = `${done} / ${total} Done`;
+    }
+
+    function scrollToQuestion(qId) {
+        const card = document.getElementById(`q-card-${qId}`);
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    /* Modal */
+    function openSubmitModal() {
+        const total = {{ questions|length }};
+        const done = document.querySelectorAll('.p-btn.answered').length;
+        const unattempted = total - done;
+        const msg = document.getElementById('modalMsg');
+        if (msg) {
+            msg.innerHTML = `You have answered <strong>${done}</strong> of <strong>${total}</strong> questions (${unattempted} remaining).<br>Would you like to finish and submit?`;
+        }
+        document.getElementById('submitModal').style.display = 'flex';
+    }
+
+    function closeSubmitModal() {
+        document.getElementById('submitModal').style.display = 'none';
+    }
+
+    function confirmSubmit() {
+        document.getElementById('examForm').submit();
+    }
+
+    /* Countdown Timer */
+    const endTimeStr = "{{ exam_end_time }}";
+    const durationMinutes = {{ exam.duration|default:60 }};
+    const endTime = endTimeStr ? new Date(endTimeStr).getTime() : Date.now() + (durationMinutes * 60 * 1000);
+
+    function tickTimer() {
         const now = Date.now();
-        let diffSec = Math.floor((targetTime - now) / 1000);
+        const diff = Math.max(0, Math.floor((endTime - now) / 1000));
+        const badge = document.getElementById('timerBadge');
+        const text = document.getElementById('timerText');
 
-        if (diffSec <= 0) {
-            timerElem.innerText = "00:00";
-            document.getElementById("examForm").submit();
+        if (diff <= 0) {
+            text.innerText = "00:00";
+            confirmSubmit();
             return;
         }
 
-        const hours = Math.floor(diffSec / 3600);
-        const mins = Math.floor((diffSec % 3600) / 60);
-        const secs = diffSec % 60;
+        if (diff < 180) badge.className = "timer-badge danger";
+        else if (diff < 600) badge.className = "timer-badge warning";
 
-        if (diffSec < 180) { // < 3 mins
-            timerBox.className = "timer-widget danger";
-        } else if (diffSec < 600) { // < 10 mins
-            timerBox.className = "timer-widget warning";
-        }
-
-        if (hours > 0) {
-            timerElem.innerText = `${hours}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        } else {
-            timerElem.innerText = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-        }
+        const m = Math.floor(diff / 60);
+        const s = diff % 60;
+        text.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    setInterval(updateTimer, 1000);
-    updateTimer();
+    setInterval(tickTimer, 1000);
+    tickTimer();
 
     /* ========================================================
-       ANTI-CHEAT: Multi-Event Tab & Window Switch Detection
+       ANTI-CHEAT: Multi-Event Detection
        ======================================================== */
     let violationInProgress = false;
-    let localViolationCount = 0;
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]') ? document.querySelector('[name=csrfmiddlewaretoken]').value : '';
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    function triggerViolationCheck() {
+    function reportViolation() {
         if (violationInProgress) return;
         violationInProgress = true;
 
@@ -1163,210 +977,59 @@
         .then(res => res.json())
         .then(data => {
             if (data.action === 'warning') {
-                localViolationCount = 1;
-                showViolationWarning(data.message);
+                renderViolationDialog(data.message, false);
                 violationInProgress = false;
             } else if (data.action === 'terminated') {
-                localViolationCount = 2;
-                showTerminationAndAutoSubmit(data.message);
-            } else if (data.action === 'none') {
-                /* Staff preview mode */
-                console.log("Anti-cheat: Staff preview mode active (no penalty).");
-                violationInProgress = false;
+                renderViolationDialog(data.message, true);
             } else {
                 violationInProgress = false;
             }
         })
-        .catch(err => {
-            console.error("Violation check error:", err);
-            violationInProgress = false;
-        });
+        .catch(() => { violationInProgress = false; });
     }
 
-    /* 1. Detect switching browser tabs / minimizing window */
     document.addEventListener("visibilitychange", function() {
-        if (document.hidden) {
-            triggerViolationCheck();
-        }
+        if (document.hidden) reportViolation();
     });
 
-    /* 2. Detect clicking outside browser, opening another app, or split-screen */
     window.addEventListener("blur", function() {
-        triggerViolationCheck();
+        reportViolation();
     });
 
-    /* Violation Warning Modal (1st offense) */
-    function showViolationWarning(message) {
-        const modal = document.getElementById("submitModal");
-        const card = modal.querySelector(".modal-card");
-
-        card.innerHTML = `
-            <div class="modal-icon" style="background: #fffbeb; color: #f59e0b; width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <svg style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-            </div>
-            <h3 class="modal-title" style="color: #b45309; font-size: 20px; font-weight: 700; margin-bottom: 8px;">⚠ Warning: Tab Switch Detected</h3>
-            <p class="modal-text" style="color: #92400e; font-weight: 500; font-size: 14.5px; line-height: 1.5; margin-bottom: 20px;">${message}</p>
-            <div class="modal-actions">
-                <button type="button" class="btn-modal-confirm" style="background: linear-gradient(135deg, #f59e0b, #d97706); padding: 12px 24px; border: none; border-radius: 10px; color: white; font-weight: 700; cursor: pointer; width: 100%;"
-                    onclick="document.getElementById('submitModal').style.display='none'; restoreModalContent();">
-                    I Understand — Return to Exam
-                </button>
-            </div>
-        `;
-        modal.style.display = "flex";
-    }
-
-    /* Termination screen (2nd offense) — auto submits form and locks session */
-    function showTerminationAndAutoSubmit(message) {
-        const modal = document.getElementById("submitModal");
-        const card = modal.querySelector(".modal-card");
-
-        card.innerHTML = `
-            <div class="modal-icon" style="background: #fef2f2; color: #ef4444; width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                <svg style="width: 32px; height: 32px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                </svg>
-            </div>
-            <h3 class="modal-title" style="color: #dc2626; font-size: 20px; font-weight: 700; margin-bottom: 8px;">Examination Terminated</h3>
-            <p class="modal-text" style="color: #991b1b; font-weight: 500; font-size: 14.5px; line-height: 1.5; margin-bottom: 20px;">${message}</p>
-            <div class="modal-actions">
-                <a href="{% url 'logout' %}" class="btn-modal-confirm" style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 12px 24px; border-radius: 10px; text-decoration: none; text-align: center; font-weight: 700; display: block; width: 100%;">
-                    Acknowledge & Exit
-                </a>
-            </div>
-        `;
-        modal.style.display = "flex";
-
-        /* Auto-submit the exam form after 2 seconds to ensure answers are recorded */
-        setTimeout(() => {
-            const form = document.getElementById("examForm");
-            if (form) form.submit();
-        }, 2000);
-    }
-
-    /* Saved original modal HTML for restoration after warning */
-    const originalModalHTML = document.getElementById("submitModal").querySelector(".modal-card").innerHTML;
-    function restoreModalContent() {
-        document.getElementById("submitModal").querySelector(".modal-card").innerHTML = originalModalHTML;
-    }
-
-    /* ========================================================
-       ANTI-CHEAT: Block keyboard shortcuts
-       ======================================================== */
-    document.addEventListener("keydown", function(e) {
-        /* Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U */
-        if (
-            e.key === "F12" ||
-            (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "i")) ||
-            (e.ctrlKey && e.shiftKey && (e.key === "J" || e.key === "j")) ||
-            (e.ctrlKey && (e.key === "U" || e.key === "u"))
-        ) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        }
-    });
-
-    /* Block right-click context menu */
-    document.addEventListener("contextmenu", function(e) {
-        e.preventDefault();
-        return false;
-    });
-
-    /* Warn before closing/refreshing tab */
-    window.addEventListener("beforeunload", function(e) {
-        e.preventDefault();
-        e.returnValue = "";
-    });
-
-    /* ========================================================
-       Palette & State Tracking
-       ======================================================== */
-    function handleOptionChange(qid) {
-        const card = document.getElementById(`q-card-${qid}`);
-        const pbtn = document.getElementById(`pbtn-${qid}`);
-        const inputs = card.querySelectorAll("input, textarea");
-        let isAnswered = false;
-
-        inputs.forEach(input => {
-            const label = input.closest(".option-label");
-            if (input.type === "radio" || input.type === "checkbox") {
-                if (input.checked) {
-                    isAnswered = true;
-                    if (label) label.classList.add("checked");
-                } else {
-                    if (label) label.classList.remove("checked");
-                }
-            } else if (input.type === "file") {
-                if (input.files && input.files.length > 0) isAnswered = true;
-            } else {
-                if (input.value.trim().length > 0) isAnswered = true;
-            }
-        });
-
-        if (isAnswered) {
-            pbtn.classList.add("answered");
+    function renderViolationDialog(message, isTerminated) {
+        const modal = document.getElementById('submitModal');
+        const box = modal.querySelector('.modal-box');
+        if (isTerminated) {
+            box.innerHTML = `
+                <div class="modal-icon-badge" style="background: var(--danger-light); color: var(--danger);">
+                    <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                    </svg>
+                </div>
+                <h3 style="color: var(--danger);">Examination Terminated</h3>
+                <p>${message}</p>
+                <div class="modal-btn-row">
+                    <a href="{% url 'logout' %}" class="btn-modal-submit-now" style="background: var(--danger); text-decoration: none; display: block; width: 100%;">Acknowledge & Exit</a>
+                </div>
+            `;
+            setTimeout(() => { document.getElementById('examForm').submit(); }, 2000);
         } else {
-            pbtn.classList.remove("answered");
+            box.innerHTML = `
+                <div class="modal-icon-badge" style="background: var(--warning-light); color: var(--warning);">
+                    <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h3 style="color: #b45309;">⚠ Tab Switch Warning</h3>
+                <p>${message}</p>
+                <div class="modal-btn-row">
+                    <button type="button" class="btn-modal-submit-now" style="background: var(--warning); width: 100%;" onclick="document.getElementById('submitModal').style.display='none'">I Understand — Return to Exam</button>
+                </div>
+            `;
         }
-        updateAnsweredCount();
-    }
-
-    function clearSelection(inputName, qid) {
-        const inputs = document.querySelectorAll(`[name="${inputName}"]`);
-        inputs.forEach(input => {
-            if (input.type === "radio" || input.type === "checkbox") {
-                input.checked = false;
-            } else {
-                input.value = "";
-            }
-            const label = input.closest(".option-label");
-            if (label) label.classList.remove("checked");
-        });
-        handleOptionChange(qid);
-    }
-
-    function updateAnsweredCount() {
-        const total = document.querySelectorAll(".palette-btn").length;
-        const answered = document.querySelectorAll(".palette-btn.answered").length;
-        const counter = document.getElementById("answeredCounter");
-        if (counter) counter.innerText = `${answered} / ${total}`;
-        const mobileCounter = document.getElementById("mobileAnsweredCounter");
-        if (mobileCounter) mobileCounter.innerText = `Palette (${answered}/${total})`;
-    }
-
-    function scrollToQuestion(qid) {
-        const card = document.getElementById(`q-card-${qid}`);
-        if (card) {
-            card.scrollIntoView({ behavior: "smooth", block: "center" });
-            card.classList.add("active-target");
-            setTimeout(() => card.classList.remove("active-target"), 1200);
-        }
-    }
-
-    /* Submit Modal Handlers */
-    function openSubmitModal() {
-        restoreModalContent();
-        const total = document.querySelectorAll(".palette-btn").length;
-        const answered = document.querySelectorAll(".palette-btn.answered").length;
-        const text = document.getElementById("modalStatsText");
-        if (text) {
-            text.innerText = `You have answered ${answered} out of ${total} questions. Are you ready to finish and submit your exam?`;
-        }
-        document.getElementById("submitModal").style.display = "flex";
-    }
-
-    function closeSubmitModal() {
-        document.getElementById("submitModal").style.display = "none";
-    }
-
-    function confirmSubmit() {
-        document.getElementById("examForm").submit();
+        modal.style.display = 'flex';
     }
 </script>
-{% endif %}
 
 </body>
 </html>
