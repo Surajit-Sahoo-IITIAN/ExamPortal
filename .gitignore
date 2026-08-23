@@ -15,6 +15,12 @@ db.sqlite3-journal
 db.sqlite3-wal
 db.sqlite3-shm
 
+# Credentials & Passwords (Keep Local Only)
+students_credentials.csv
+STUDENT_PASSWORDS.md
+credentials/
+*.csv
+
 # Static & Media
 staticfiles/
 media/
