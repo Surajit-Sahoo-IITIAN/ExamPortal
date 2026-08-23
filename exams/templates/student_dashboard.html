@@ -343,8 +343,20 @@
         }
 
         @media (max-width: 640px) {
-            .exams-grid { grid-template-columns: 1fr; }
-            .exam-meta { grid-template-columns: 1fr; }
+            .top-bar { padding: 10px 14px; }
+            .brand h1 { font-size: 16px; }
+            .brand-icon { width: 34px; height: 34px; border-radius: 8px; }
+            .brand-icon svg { width: 18px; height: 18px; }
+            .user-info { gap: 8px; }
+            .user-badge { padding: 4px 8px; font-size: 12px; }
+            .btn-logout { padding: 5px 10px; font-size: 12px; gap: 4px; }
+            .btn-logout span { display: none; }
+            .page-content { margin: 16px auto; padding: 0 14px; }
+            .page-title { font-size: 20px; }
+            .page-subtitle { font-size: 13.5px; margin-bottom: 20px; }
+            .exams-grid { grid-template-columns: 1fr; gap: 14px; }
+            .exam-card { padding: 18px 16px; border-radius: 14px; }
+            .exam-meta { grid-template-columns: 1fr 1fr; gap: 6px; }
         }
     </style>
 </head>

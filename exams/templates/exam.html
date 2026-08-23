@@ -66,7 +66,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
+            padding: 10px 16px;
             box-shadow: var(--shadow-sm);
         }
 
@@ -76,19 +76,20 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 20px;
+            gap: 12px;
         }
 
         .exam-info {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
             min-width: 0;
+            flex: 1;
         }
 
         .exam-icon {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             background: linear-gradient(135deg, #2563eb, #4f46e5);
             border-radius: 10px;
             display: flex;
@@ -100,33 +101,40 @@
         }
 
         .exam-icon svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
+        }
+
+        .exam-title-group {
+            min-width: 0;
+            flex: 1;
         }
 
         .exam-title-group h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-main);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            line-height: 1.2;
         }
 
         .exam-meta-badges {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-top: 2px;
+            flex-wrap: wrap;
         }
 
         .badge {
             display: inline-flex;
             align-items: center;
             gap: 4px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
-            padding: 2px 8px;
+            padding: 1px 6px;
             border-radius: 6px;
         }
 
@@ -149,11 +157,11 @@
         .timer-widget {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: #0f172a;
             color: white;
-            padding: 8px 16px;
-            border-radius: 12px;
+            padding: 6px 12px;
+            border-radius: 10px;
             box-shadow: var(--shadow-md);
             flex-shrink: 0;
         }
@@ -166,8 +174,8 @@
         }
 
         .timer-icon svg {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
         }
 
         .timer-content {
@@ -176,19 +184,31 @@
         }
 
         .timer-label {
-            font-size: 10.5px;
+            font-size: 9.5px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             color: #94a3b8;
             font-weight: 600;
+            display: none;
         }
 
         .timer-display {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 19px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+        }
+
+        @media (min-width: 640px) {
+            .exam-navbar { padding: 12px 24px; }
+            .exam-icon { width: 42px; height: 42px; }
+            .exam-icon svg { width: 22px; height: 22px; }
+            .exam-title-group h1 { font-size: 18px; }
+            .timer-widget { padding: 8px 16px; gap: 12px; border-radius: 12px; }
+            .timer-icon svg { width: 20px; height: 20px; }
+            .timer-label { display: block; }
+            .timer-display { font-size: 19px; }
         }
 
         .timer-widget.warning {
@@ -210,18 +230,27 @@
         /* Main Container Layout */
         .main-wrapper {
             max-width: 1380px;
-            margin: 24px auto;
-            padding: 0 24px;
+            margin: 16px auto;
+            padding: 0 16px;
             width: 100%;
             display: grid;
             grid-template-columns: minmax(0, 1fr) 320px;
-            gap: 28px;
+            gap: 20px;
             align-items: start;
+        }
+
+        @media (min-width: 1025px) {
+            .main-wrapper {
+                margin: 24px auto;
+                padding: 0 24px;
+                gap: 28px;
+            }
         }
 
         @media (max-width: 1024px) {
             .main-wrapper {
                 grid-template-columns: 1fr;
+                padding-bottom: 30px;
             }
         }
 
@@ -229,18 +258,31 @@
         .questions-stream {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .questions-stream {
+                gap: 24px;
+            }
         }
 
         /* Question Card */
         .question-card {
             background: var(--card-bg);
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid var(--border);
-            padding: 28px;
+            padding: 18px 16px;
             box-shadow: var(--shadow-sm);
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
             position: relative;
+        }
+
+        @media (min-width: 640px) {
+            .question-card {
+                border-radius: 16px;
+                padding: 28px;
+            }
         }
 
         .question-card:hover {
@@ -329,14 +371,23 @@
         .option-label {
             display: flex;
             align-items: flex-start;
-            gap: 14px;
-            padding: 14px 18px;
+            gap: 12px;
+            padding: 12px 14px;
             background: #ffffff;
             border: 1.5px solid var(--border);
             border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s ease;
             user-select: none;
+            min-height: 48px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        @media (min-width: 640px) {
+            .option-label {
+                gap: 14px;
+                padding: 14px 18px;
+            }
         }
 
         .option-label:hover {
@@ -347,8 +398,8 @@
         .option-input {
             margin-top: 3px;
             accent-color: var(--primary);
-            width: 18px;
-            height: 18px;
+            width: 20px;
+            height: 20px;
             cursor: pointer;
             flex-shrink: 0;
         }
@@ -360,15 +411,15 @@
         }
 
         .option-letter {
-            width: 24px;
-            height: 24px;
+            width: 26px;
+            height: 26px;
             border-radius: 6px;
             background: #f1f5f9;
             color: #475569;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12.5px;
+            font-size: 13px;
             font-weight: 700;
             flex-shrink: 0;
             transition: all 0.2s ease;
@@ -388,10 +439,73 @@
 
         .option-img {
             margin-top: 10px;
-            max-width: 320px;
+            max-width: 100%;
             border-radius: 8px;
             border: 1px solid var(--border);
             display: block;
+        }
+
+        /* Mobile Fixed Floating Bottom Bar */
+        .mobile-bottom-bar {
+            display: none;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-bottom-bar {
+                display: flex;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.96);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                border-top: 1px solid var(--border);
+                padding: 10px 16px;
+                z-index: 40;
+                box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+
+            .mobile-btn-palette {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 10px 14px;
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                background: white;
+                color: var(--text-main);
+                font-weight: 600;
+                font-size: 13.5px;
+                cursor: pointer;
+                text-decoration: none;
+            }
+
+            .mobile-btn-submit {
+                flex: 1;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 10px 14px;
+                border: none;
+                border-radius: 10px;
+                background: linear-gradient(135deg, #10b981, #059669);
+                color: white;
+                font-weight: 700;
+                font-size: 14px;
+                cursor: pointer;
+                box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+            }
+
+            .palette-sidebar {
+                margin-bottom: 70px;
+            }
         }
 
         /* Non-MCQ Inputs */
@@ -937,6 +1051,24 @@
     </aside>
 </main>
 
+{% if not is_admin %}
+<!-- Mobile Fixed Floating Action Bar -->
+<div class="mobile-bottom-bar">
+    <button type="button" class="mobile-btn-palette" onclick="document.querySelector('.palette-sidebar').scrollIntoView({behavior: 'smooth'})">
+        <svg style="width: 16px; height: 16px; color: var(--primary);" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+        </svg>
+        <span id="mobileAnsweredCounter">0 / {{ questions|length }}</span>
+    </button>
+    <button type="button" class="mobile-btn-submit" onclick="openSubmitModal()">
+        <svg style="width: 16px; height: 16px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+        </svg>
+        Submit Exam
+    </button>
+</div>
+{% endif %}
+
 <!-- Submit Confirmation Modal -->
 <div class="modal-overlay" id="submitModal">
     <div class="modal-card">
@@ -1179,6 +1311,8 @@
         const answered = document.querySelectorAll(".palette-btn.answered").length;
         const counter = document.getElementById("answeredCounter");
         if (counter) counter.innerText = `${answered} / ${total}`;
+        const mobileCounter = document.getElementById("mobileAnsweredCounter");
+        if (mobileCounter) mobileCounter.innerText = `Palette (${answered}/${total})`;
     }
 
     function scrollToQuestion(qid) {
