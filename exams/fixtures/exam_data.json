@@ -1,0 +1,538 @@
+[
+{
+  "model": "exams.exam",
+  "pk": 1,
+  "fields": {
+    "title": "Mathphobia Class Test  01 (Class VII)",
+    "description": "This test is conducted as a pre-examination assessment to understand the student’s preparation level before the school examination and to help them experience a real exam environment.",
+    "total_marks": 26,
+    "duration": 60,
+    "start_time": "2026-08-23T08:59:29.589Z",
+    "end_time": "2026-08-23T11:59:29.589Z",
+    "instructor_feedback": null
+  }
+},
+{
+  "model": "exams.exam",
+  "pk": 3,
+  "fields": {
+    "title": "ExamAttempt Test",
+    "description": "Temporary test for ExamAttempt functionality",
+    "total_marks": 10,
+    "duration": 26,
+    "start_time": "2026-08-22T13:30:00Z",
+    "end_time": "2026-08-22T18:00:59Z",
+    "instructor_feedback": null
+  }
+},
+{
+  "model": "exams.exam",
+  "pk": 4,
+  "fields": {
+    "title": "Analytics Test - MCQ & Multi",
+    "description": "Test examination for validating MCQ, Multiple Correct questions, result calculation, and examination analytics.",
+    "total_marks": 3,
+    "duration": 10,
+    "start_time": "2026-08-22T17:50:50Z",
+    "end_time": "2026-08-22T18:29:00Z",
+    "instructor_feedback": ""
+  }
+},
+{
+  "model": "exams.exam",
+  "pk": 5,
+  "fields": {
+    "title": "System Feature Test - MCQ & MULTI",
+    "description": "Internal test examination for validating MCQ, multiple-correct,\r\nresult evaluation, explanations, analytics, instructor feedback,\r\nand examination monitoring.",
+    "total_marks": 3,
+    "duration": 10,
+    "start_time": null,
+    "end_time": null,
+    "instructor_feedback": ""
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 1,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What should come in place of both \\(x\\) in the equation: \\[\\frac{x}{\\sqrt{128}}=\\frac{\\sqrt{162}}{x}\\]",
+    "question_image": "",
+    "marks": 2,
+    "option1": "\\(12\\)",
+    "option2": "\\(14\\)",
+    "option3": "\\(144\\)",
+    "option4": "\\(196\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(12\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 2,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "The digit in the unit's place in the square root of 15876 is :",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(1\\)",
+    "option2": "\\(3\\)",
+    "option3": "\\(6\\)",
+    "option4": "\\(9\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(6\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 3,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "Let \\(n\\) be a positive integer. If the square root of a number \\(X\\) is exactly \\(3n + 5\\), and the square root of the next immediate perfect square greater than \\(X\\) is \\(3n + 6\\), what is the difference between these two consecutive perfect squares?",
+    "question_image": "",
+    "marks": 2,
+    "option1": "\\(6n+11\\)",
+    "option2": "\\(6n+5\\)",
+    "option3": "\\(9n^2+30n+25\\)",
+    "option4": "\\(1\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(6n+11\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 4,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "A 3-digit number \\(\\overline{abc}\\) (where \\(a \\neq 0\\)) is called a Cyclic Sum Number if it is exactly equal to the sum of all distinct 2-digit numbers that can be formed by using its digits in a cyclic order (\\(\\overline{ab}\\), \\(\\overline{bc}\\), and \\(\\overline{ca}\\)). How many such 3-digit numbers exist?",
+    "question_image": "",
+    "marks": 5,
+    "option1": "\\(0\\)",
+    "option2": "\\(1\\)",
+    "option3": "\\(9\\)",
+    "option4": "Infinitely many",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(1\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 5,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "If \\(N\\) is a 4-digit perfect square such that its first two digits are identical and its last two digits are identical (i.e., \\(N = \\overline{aabb}\\)), what is the value of the square root, \\(\\sqrt{N}\\)?",
+    "question_image": "",
+    "marks": 3,
+    "option1": "\\(66\\)",
+    "option2": "\\(77\\)",
+    "option3": "\\(88\\)",
+    "option4": "\\(99\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(77\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 6,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "Find the value of \\(n\\) if the following exponential equation holds true: \\[\\frac{2^{n} \\times 4^{2n-1}}{8^{n+1}} = 32\\]",
+    "question_image": "",
+    "marks": 2,
+    "option1": "\\(4\\)",
+    "option2": "\\(5\\)",
+    "option3": "\\(6\\)",
+    "option4": "\\(7\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(5\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 7,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "In a parallelogram \\(ABCD\\), the bisectors of two consecutive angles, \\(\\angle A\\) and \\(\\angle B\\), intersect each other at a point \\(P\\) inside the parallelogram. What is the measure of \\(\\angle APB\\)?",
+    "question_image": "",
+    "marks": 2,
+    "option1": "\\(60^\\circ\\)",
+    "option2": "\\(90^\\circ\\)",
+    "option3": "\\(120^\\circ\\)",
+    "option4": "Depends on the values of \\(\\angle A\\) and \\(\\angle B\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(90^\\circ\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 8,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "The diagonals of a quadrilateral \\(PQRS\\) are equal in length (\\(PR = QS\\)) and bisect each other at right angles (\\(90^\\circ\\)). What is the most precise name for this quadrilateral?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "Rectangle",
+    "option2": "Rhombus",
+    "option3": "Square",
+    "option4": "Parallelogram",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "Square",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 9,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "The ratio of the interior angles of a convex quadrilateral is \\(2 : 3 : 4 : 6\\). What is the measure of the largest interior angle?",
+    "question_image": "",
+    "marks": 2,
+    "option1": "\\(96^\\circ\\)",
+    "option2": "\\(120^\\circ\\)",
+    "option3": "\\(144^\\circ\\)",
+    "option4": "\\(160^\\circ\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(144^\\circ\\)",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 11,
+  "fields": {
+    "exam": 3,
+    "question_type": "MCQ",
+    "question_text": "What is \\(2+2\\)?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(2\\)",
+    "option2": "\\(4\\)",
+    "option3": "\\(9\\)",
+    "option4": "\\(10\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "2",
+    "explanation": "We add the two numbers:\r\n\\(2 + 2 = 4\\).",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 12,
+  "fields": {
+    "exam": 3,
+    "question_type": "MULTI",
+    "question_text": "Which of the following are prime numbers?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(2\\)",
+    "option2": "\\(4\\)",
+    "option3": "\\(5\\)",
+    "option4": "\\(9\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "1,3",
+    "explanation": "2 and 5 are prime numbers because they have exactly two positive divisors: 1 and themselves.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 13,
+  "fields": {
+    "exam": 4,
+    "question_type": "MCQ",
+    "question_text": "What is the value of \\(2^3\\)?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(6\\)",
+    "option2": "\\(8\\)",
+    "option3": "\\(9\\)",
+    "option4": "\\(12\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(8\\)",
+    "explanation": "We have \\(2^3 = 2 \\times 2 \\times 2 = 8\\). Therefore, the correct answer is 8.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 14,
+  "fields": {
+    "exam": 4,
+    "question_type": "MULTI",
+    "question_text": "Which of the following are prime numbers?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(2\\)",
+    "option2": "\\(4\\)",
+    "option3": "\\(5\\)",
+    "option4": "\\(9\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(2,5\\)",
+    "explanation": "A prime number is a natural number greater than 1 that has exactly two positive divisors: 1 and itself. Therefore, 2 and 5 are prime numbers, while 4 and 9 are composite numbers.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 15,
+  "fields": {
+    "exam": 4,
+    "question_type": "MCQ",
+    "question_text": "Which data structure follows the FIFO principle?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "Stack",
+    "option2": "Queue",
+    "option3": "Tree",
+    "option4": "Graph",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "Queue",
+    "explanation": "FIFO stands for First In, First Out. A queue follows the FIFO principle because the element inserted first is the element removed first.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 16,
+  "fields": {
+    "exam": 5,
+    "question_type": "MCQ",
+    "question_text": "If \\(A=\\{1,2,3\\}\\), how many elements does A contain?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(2\\)",
+    "option2": "\\(3\\)",
+    "option3": "\\(4\\)",
+    "option4": "\\(5\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(2\\)",
+    "explanation": "The set \\(A = \\{1,2,3\\}\\) contains exactly three elements.\r\nTherefore, Option \\(2\\) is correct.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 17,
+  "fields": {
+    "exam": 5,
+    "question_type": "MCQ",
+    "question_text": "What is the value of \\(2^3\\) ?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(6\\)",
+    "option2": "\\(8\\)",
+    "option3": "\\(9\\)",
+    "option4": "\\(12\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(2\\)",
+    "explanation": "\\(2^3 = 2 × 2 × 2 = 8\\).\r\nTherefore, Option \\(2\\) is correct.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 18,
+  "fields": {
+    "exam": 5,
+    "question_type": "MULTI",
+    "question_text": "Which of the following are prime numbers?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "\\(2\\)",
+    "option2": "\\(4\\)",
+    "option3": "\\(5\\)",
+    "option4": "\\(9\\)",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "\\(1,3\\)",
+    "explanation": "\\(2\\) and \\(5\\) are prime numbers because they have exactly two\r\npositive divisors: \\(1\\) and themselves.\r\n\r\nTherefore, Options \\(1\\) and \\(3\\) are correct.",
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 19,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What is 2 + 2?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "3",
+    "option2": "4",
+    "option3": "5",
+    "option4": "6",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "2",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 20,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What is the square root of 144?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "10",
+    "option2": "11",
+    "option3": "12",
+    "option4": "13",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "3",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 21,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What is 15 × 3?",
+    "question_image": "",
+    "marks": 2,
+    "option1": "30",
+    "option2": "45",
+    "option3": "50",
+    "option4": "60",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "2",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 22,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What is 100 ÷ 4?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "20",
+    "option2": "25",
+    "option3": "30",
+    "option4": "35",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "2",
+    "explanation": null,
+    "tolerance": null
+  }
+},
+{
+  "model": "exams.question",
+  "pk": 23,
+  "fields": {
+    "exam": 1,
+    "question_type": "MCQ",
+    "question_text": "What is 7²?",
+    "question_image": "",
+    "marks": 1,
+    "option1": "42",
+    "option2": "47",
+    "option3": "49",
+    "option4": "51",
+    "option1_image": "",
+    "option2_image": "",
+    "option3_image": "",
+    "option4_image": "",
+    "correct_answer": "3",
+    "explanation": null,
+    "tolerance": null
+  }
+}
+]
