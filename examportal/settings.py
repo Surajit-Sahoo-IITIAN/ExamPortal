@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
-
+import os
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,17 +21,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ti9epz5c#4ghrl0s-uczu@xbhx8#(@2+63fdp7vclk=a1xfa8i'
+import os
+
+SECRET_KEY = os.environ.get(
+    "SECRET_KEY",
+    "django-insecure-local-development-key"
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = not os.environ.get("RENDER", False)
 
 ALLOWED_HOSTS = [
-    "*",
     "127.0.0.1",
     "localhost",
-    "repaint-setting-unhidden.ngrok-free.dev",
 ]
+
+if os.environ.get("RENDER"):
+    ALLOWED_HOSTS.append(os.environ.get("RENDER_EXTERNAL_HOSTNAME"))
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.onrender.com",
@@ -91,13 +98,11 @@ WSGI_APPLICATION = 'examportal.wsgi.application'
 # Configured with 60s timeout and WAL (Write-Ahead Logging) for high concurrency handling (100+ concurrent students)
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'OPTIONS': {
-            'timeout': 60,
-        }
-    }
+    'default': dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
 }
 
 
