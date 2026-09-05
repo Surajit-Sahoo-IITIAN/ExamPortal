@@ -1608,8 +1608,8 @@
 
        Rule:
        - Temporary browser/system UI interaction is ignored
-         if the page becomes visible again within 1.5 seconds.
-       - Leaving the examination page for more than 1.5 seconds
+         if the page becomes visible again within 3 seconds.
+       - Leaving the examination page for more than 3 seconds
          is treated as a violation.
        - First violation -> warning.
        - Second violation -> termination.
@@ -1710,8 +1710,8 @@
     /*
      * Detect actual page visibility loss.
      *
-     * We wait 1.5 seconds before reporting.
-     * If the student returns before 1.5 seconds,
+     * We wait 3 seconds before reporting.
+     * If the student returns before 3 seconds,
      * the event is ignored.
      */
 
@@ -1774,6 +1774,68 @@
     /* ========================================================
        VIOLATION DIALOG
        ======================================================== */
+
+    function closeViolationDialog() {
+        const modal = document.getElementById('submitModal');
+        if (!modal) {
+            return;
+        }
+
+        modal.style.display = 'none';
+
+        const box = modal.querySelector('.modal-box');
+        if (!box) {
+            return;
+        }
+
+        box.innerHTML = `
+            <div
+                class="modal-icon-badge"
+                style="background: var(--primary-light); color: var(--primary);"
+            >
+                <svg
+                    style="width: 24px; height: 24px;"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                </svg>
+            </div>
+
+            <h3>
+                Submit Examination?
+            </h3>
+
+            <p id="modalMsg">
+                Are you sure you want to finalize your submission?
+            </p>
+
+            <div class="modal-btn-row">
+                <button
+                    type="button"
+                    class="btn-modal-cancel"
+                    onclick="closeSubmitModal()"
+                >
+                    Review Questions
+                </button>
+
+                <button
+                    type="button"
+                    class="btn-modal-submit-now"
+                    onclick="confirmSubmit()"
+                >
+                    Confirm & Submit
+                </button>
+            </div>
+        `;
+    }
+
 
     function renderViolationDialog(
         message,
@@ -1908,9 +1970,7 @@
                             background: var(--warning);
                             width: 100%;
                         "
-                        onclick="
-                            document.getElementById('submitModal').style.display='none'
-                        "
+                        onclick="closeViolationDialog()"
                     >
                         I Understand — Return to Exam
                     </button>
