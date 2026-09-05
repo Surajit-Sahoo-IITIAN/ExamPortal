@@ -522,7 +522,10 @@
         </div>
         <div class="feedback-signoff">
             <div class="feedback-signature-line">&nbsp;</div>
-            <div class="feedback-signoff-name">{{ instructor_name|default:"Instructor" }}</div>
+            <div class="feedback-signoff-name"> Surajit Sahoo</div>
+            <div>Course Instructor</div>
+            <div>Department of Computer Science and Engineering</div>
+            <div>Dayananda Sagar University</div>
             <div class="feedback-signoff-date">
                 Date: {{ result.submitted_at|date:"d M Y" }}
             </div>
@@ -564,21 +567,22 @@
 
     <script>
         /* ========================================================
-           QUESTION / OPTION LATEX -> HTML PREPROCESSING
-           --------------------------------------------------------
-           Keep the result page consistent with the exam page.
+           RESULT-PAGE LATEX PREPROCESSING
 
-           Supported text/document commands:
-             \textbf{...}      -> <strong>...</strong>
-             \textit{...}      -> <em>...</em>
-             \underline{...}   -> <u>...</u>
-             \begin{enumerate} -> <ol>...</ol>
-             \begin{itemize}  -> <ul>...</ul>
-             \begin{center}   -> centered HTML
+           The exam page and result page must interpret the same
+           authoring syntax before MathJax typesets the page.
 
-           Existing \(...\) and \[...\] math is left for MathJax.
-           Bare mathematical option text such as \displaystyle ... is
-           wrapped in inline math so it is rendered as mathematics too.
+           Supported:
+             \textbf{...}       -> <strong>...</strong>
+             \textit{...}       -> <em>...</em>
+             \underline{...}    -> <u>...</u>
+             \begin{enumerate}  -> <ol>...</ol>
+             \begin{itemize}    -> <ul>...</ul>
+             \begin{center}     -> centered HTML
+
+           Existing \(...\) and \[...\] are left for MathJax.
+           Bare mathematical option text is wrapped in \(...\)
+           because MCQ options may be stored without delimiters.
            ======================================================== */
 
         function replaceBalancedLatexCommand(source, command, tag) {
@@ -628,7 +632,10 @@
                 items.push(`<li>${match[1].trim()}</li>`);
             }
 
-            if (items.length === 0) return null;
+            if (items.length === 0) {
+                return null;
+            }
+
             return `<${htmlTag}>${items.join("")}</${htmlTag}>`;
         }
 
@@ -676,18 +683,32 @@
             return source;
         }
 
-        function looksLikeBareMath(source) {
+        function containsBareMath(source) {
             const stripped = source
                 .replace(/<[^>]*>/g, "")
                 .replace(/&nbsp;/gi, " ")
                 .trim();
 
-            if (!stripped) return false;
+            if (!stripped) {
+                return false;
+            }
+
             if (stripped.includes("\\(") || stripped.includes("\\[") || stripped.includes("\\begin{")) {
                 return false;
             }
 
-            return /\\(?:displaystyle|textstyle|frac|sqrt|forall|exists|neg|land|lor|rightarrow|left|right|quad|geq|leq|neq|in|subset|subseteq|cup|cap|sum|prod|mathbb|mathbf|mathrm|sin|cos|tan|log|ln)\b/.test(stripped);
+            /*
+             * MCQ options are often stored as raw LaTeX such as
+             *   m=5, and 2^k>k^2 \\Rightarrow ...
+             * without \(...\).  In an option this whole string is
+             * mathematical content, so typeset it as one inline
+             * MathJax expression.
+             */
+            return (
+                /\\[A-Za-z]+/.test(stripped) ||
+                /\^/.test(stripped) ||
+                /_\{[^}]+\}/.test(stripped)
+            );
         }
 
         function preprocessLatexElement(element) {
@@ -701,7 +722,15 @@
             html = replaceBalancedLatexCommand(html, "textit", "em");
             html = replaceBalancedLatexCommand(html, "underline", "u");
 
-            if (looksLikeBareMath(html)) {
+            /*
+             * Only option values are allowed to use the whole-string
+             * bare-math fallback.  Question/explanation paragraphs may
+             * legitimately contain ordinary English alongside LaTeX.
+             */
+            if (
+                element.classList.contains("latex-option-value") &&
+                containsBareMath(html)
+            ) {
                 html = `\\(${html.trim()}\\)`;
             }
 
@@ -721,20 +750,34 @@
             return Promise.resolve();
         }
 
-        window.addEventListener("load", function() {
+        /*
+         * Perform preprocessing BEFORE MathJax's normal page typesetting.
+         */
+        window.addEventListener("DOMContentLoaded", function() {
             preprocessResultLatex();
-            typesetResultMath();
+
+            if (window.MathJax && MathJax.startup) {
+                MathJax.startup.promise.then(function() {
+                    return MathJax.typesetPromise();
+                });
+            }
         });
 
         function printScorecard() {
+            preprocessResultLatex();
             typesetResultMath().then(function() {
-                window.print();
+                setTimeout(function() {
+                    window.print();
+                }, 100);
             });
         }
 
         function downloadScorecardPDF() {
+            preprocessResultLatex();
             typesetResultMath().then(function() {
-                window.print();
+                setTimeout(function() {
+                    window.print();
+                }, 100);
             });
         }
     </script>
