@@ -15,6 +15,9 @@
             tex: {
                 inlineMath: [['\\(', '\\)']],
                 displayMath: [['\\[', '\\]']]
+            },
+            startup: {
+                typeset: false
             }
         };
     </script>
@@ -268,6 +271,34 @@
             color: var(--text-title);
             line-height: 1.6;
             margin-bottom: 18px;
+        }
+
+        /* LaTeX text/list formatting */
+        .q-prompt-text ol,
+        .q-prompt-text ul {
+            margin: 10px 0 14px 26px;
+            padding-left: 18px;
+        }
+
+        .q-prompt-text ol {
+            list-style-type: decimal;
+        }
+
+        .q-prompt-text ul {
+            list-style-type: disc;
+        }
+
+        .q-prompt-text li {
+            margin: 5px 0;
+            padding-left: 4px;
+        }
+
+        .q-prompt-text strong {
+            font-weight: 700;
+        }
+
+        .q-prompt-text em {
+            font-style: italic;
         }
 
         .q-img-wrapper {
@@ -1601,6 +1632,230 @@
     );
 
     tickTimer();
+
+
+    /* ========================================================
+       QUESTION LATEX -> HTML PREPROCESSING
+       --------------------------------------------------------
+       Supports common LaTeX text/list commands in questions.
+
+       \textbf{...}     -> <strong>...</strong>
+       \textit{...}     -> <em>...</em>
+       \underline{...}  -> <u>...</u>
+       \begin{enumerate} ... \end{enumerate} -> <ol>...</ol>
+       \begin{itemize}  ... \end{itemize}  -> <ul>...</ul>
+
+       Mathematical expressions inside \( ... \) and \[ ... \]
+       remain untouched so MathJax can render them.
+       ======================================================== */
+
+    function replaceBalancedLatexCommand(source, command, tag) {
+
+        const token = "\\" + command + "{";
+        let result = "";
+        let position = 0;
+
+        while (position < source.length) {
+
+            const start = source.indexOf(token, position);
+
+            if (start === -1) {
+                result += source.slice(position);
+                break;
+            }
+
+            result += source.slice(position, start);
+
+            const contentStart = start + token.length;
+            let depth = 1;
+            let i = contentStart;
+
+            while (i < source.length && depth > 0) {
+
+                if (source[i] === "{") {
+                    depth++;
+                }
+                else if (source[i] === "}") {
+                    depth--;
+                }
+
+                i++;
+            }
+
+            if (depth !== 0) {
+                result += source.slice(start);
+                break;
+            }
+
+            const content = source.slice(
+                contentStart,
+                i - 1
+            );
+
+            result += `<${tag}>${content}</${tag}>`;
+            position = i;
+        }
+
+        return result;
+    }
+
+
+    function latexListToHtml(body, htmlTag) {
+
+        const items = [];
+        const itemPattern =
+            /\\item(?:\s+|&nbsp;)([\s\S]*?)(?=\\item(?:\s+|&nbsp;)|$)/g;
+
+        let match;
+
+        while ((match = itemPattern.exec(body)) !== null) {
+            items.push(
+                `<li>${match[1].trim()}</li>`
+            );
+        }
+
+        if (items.length === 0) {
+            return null;
+        }
+
+        return `<${htmlTag}>${items.join("")}</${htmlTag}>`;
+    }
+
+
+    function replaceLatexListEnvironment(
+        source,
+        environment,
+        htmlTag
+    ) {
+
+        /*
+         * Handle the common form:
+         *
+         * \[
+         * \begin{enumerate}
+         * ...
+         * \end{enumerate}
+         * \]
+         *
+         * The surrounding display delimiters must be removed because
+         * enumerate/itemize are document structures, not math.
+         */
+        const displayPattern = new RegExp(
+            String.raw`\\\[\s*\\begin\{${environment}\}([\s\S]*?)\\end\{${environment}\}\s*\\\]`,
+            "g"
+        );
+
+        source = source.replace(
+            displayPattern,
+            function(match, body) {
+
+                const html =
+                    latexListToHtml(
+                        body,
+                        htmlTag
+                    );
+
+                return html || match;
+            }
+        );
+
+
+        /*
+         * Also support:
+         *
+         * \begin{enumerate}
+         * ...
+         * \end{enumerate}
+         */
+        const barePattern = new RegExp(
+            String.raw`\\begin\{${environment}\}([\s\S]*?)\\end\{${environment}\}`,
+            "g"
+        );
+
+        source = source.replace(
+            barePattern,
+            function(match, body) {
+
+                const html =
+                    latexListToHtml(
+                        body,
+                        htmlTag
+                    );
+
+                return html || match;
+            }
+        );
+
+        return source;
+    }
+
+
+    function preprocessQuestionLatex() {
+
+        document
+            .querySelectorAll(".q-prompt-text")
+            .forEach(function(element) {
+
+                let html = element.innerHTML;
+
+                html =
+                    replaceLatexListEnvironment(
+                        html,
+                        "enumerate",
+                        "ol"
+                    );
+
+                html =
+                    replaceLatexListEnvironment(
+                        html,
+                        "itemize",
+                        "ul"
+                    );
+
+                html =
+                    replaceBalancedLatexCommand(
+                        html,
+                        "textbf",
+                        "strong"
+                    );
+
+                html =
+                    replaceBalancedLatexCommand(
+                        html,
+                        "textit",
+                        "em"
+                    );
+
+                html =
+                    replaceBalancedLatexCommand(
+                        html,
+                        "underline",
+                        "u"
+                    );
+
+                element.innerHTML = html;
+            });
+    }
+
+
+    /*
+     * Prevent MathJax from typesetting before the LaTeX-to-HTML
+     * conversion has taken place.
+     */
+    window.addEventListener(
+        "load",
+        function() {
+
+            preprocessQuestionLatex();
+
+            if (
+                window.MathJax &&
+                typeof MathJax.typesetPromise === "function"
+            ) {
+                MathJax.typesetPromise();
+            }
+        }
+    );
 
 
     /* ========================================================
