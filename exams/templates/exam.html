@@ -1644,6 +1644,7 @@
        \underline{...}  -> <u>...</u>
        \begin{enumerate} ... \end{enumerate} -> <ol>...</ol>
        \begin{itemize}  ... \end{itemize}  -> <ul>...</ul>
+       \begin{center} ... \end{center} -> centered HTML block
 
        Mathematical expressions inside \( ... \) and \[ ... \]
        remain untouched so MathJax can render them.
@@ -1790,6 +1791,47 @@
     }
 
 
+    function replaceLatexCenterEnvironment(source) {
+
+        /*
+         * Support centered text/content written as:
+         *
+         * \begin{center}
+         * ...
+         * \end{center}
+         *
+         * This is document structure, not mathematics, so it must be
+         * converted to HTML before MathJax runs.
+         */
+
+        const displayPattern = new RegExp(
+            String.raw`\\\[\s*\\begin\{center\}([\s\S]*?)\\end\{center\}\s*\\\]`,
+            "g"
+        );
+
+        source = source.replace(
+            displayPattern,
+            function(match, body) {
+                return `<div style="text-align: center;">${body.trim()}</div>`;
+            }
+        );
+
+        const barePattern = new RegExp(
+            String.raw`\\begin\{center\}([\s\S]*?)\\end\{center\}`,
+            "g"
+        );
+
+        source = source.replace(
+            barePattern,
+            function(match, body) {
+                return `<div style="text-align: center;">${body.trim()}</div>`;
+            }
+        );
+
+        return source;
+    }
+
+
     function preprocessQuestionLatex() {
 
         document
@@ -1810,6 +1852,11 @@
                         html,
                         "itemize",
                         "ul"
+                    );
+
+                html =
+                    replaceLatexCenterEnvironment(
+                        html
                     );
 
                 html =
