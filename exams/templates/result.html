@@ -336,6 +336,23 @@
         .feedback-card{background:#fffdf6;border:1px solid #f4c95d;border-radius:var(--radius-card);padding:20px 22px;box-shadow:0 6px 16px -4px rgba(180,120,0,.08)}.feedback-card-header{display:flex;align-items:center;gap:9px;margin-bottom:10px}.feedback-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:#fbbf24;color:#fff;flex-shrink:0}.feedback-icon svg{width:15px;height:15px}.feedback-title{font-family:'Plus Jakarta Sans',sans-serif;color:var(--text-title);font-size:17px;font-weight:700}.feedback-title-wrap{display:flex;align-items:center;gap:9px}.feedback-body{font-size:13.5px;color:var(--text-body);line-height:1.6}.feedback-body p+p{margin-top:8px}.feedback-suggestions{margin:6px 0 0 18px;padding:0}.feedback-suggestions li{margin:2px 0}.feedback-signoff{margin-top:24px;text-align:right;font-size:12.5px;line-height:1.5;color:var(--text-sub)}.feedback-signature-line{display:inline-block;min-width:190px;margin-bottom:4px;border-bottom:1px solid #64748b}.feedback-signoff-name{font-weight:700;color:var(--text-title);font-size:13.5px}.feedback-signoff-date{margin-top:2px}.feedback-signoff-link{margin-top:2px}.feedback-signoff-link a{color:var(--primary);text-decoration:none;font-weight:600}.feedback-signoff-link a:hover{text-decoration:underline}
         .result-actions{display:grid;grid-template-columns:1fr 1fr;gap:20px}.result-action-btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;padding:12px 18px;border:1px solid var(--border-light);border-radius:12px;background:#fff;color:var(--primary);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(15,23,42,.03);transition:transform .15s ease,border-color .15s ease,box-shadow .15s ease}.result-action-btn:hover{transform:translateY(-1px);border-color:#bfdbfe;box-shadow:0 6px 14px rgba(37,99,235,.08)}.result-action-btn svg{width:18px;height:18px}
         .result-footer-note{border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;border-radius:10px;padding:11px 14px;font-size:12.5px;line-height:1.5;display:flex;gap:8px;align-items:flex-start}.result-footer-note svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
+
+        /* LaTeX text/list rendering for result questions and options */
+        .latex-content ol {
+            margin: 8px 0 8px 24px;
+            padding-left: 22px;
+        }
+        .latex-content ul {
+            margin: 8px 0 8px 24px;
+            padding-left: 22px;
+        }
+        .latex-content li {
+            margin: 4px 0;
+        }
+        .latex-center {
+            text-align: center;
+        }
+
         @media print{ @page{size:A4;margin:12mm} body{background:#fff!important;padding:0}.portal-header,.result-actions,.bottom-action-wrap{display:none!important}.scorecard-page{max-width:none}.scorecard-watermark{position:fixed;color:rgba(100,116,139,.10);z-index:2}.hero-scorecard,.review-card,.feedback-card{break-inside:avoid;box-shadow:none}.result-footer-note{break-inside:avoid}.review-card{page-break-inside:avoid}.scorecard-container{max-width:none} }
 
         @media (max-width: 768px) {
@@ -344,16 +361,6 @@
             .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
             .stat-box-val { font-size: 18px; }
             .review-card { padding: 18px 16px; }
-        }
-        .q-text-body ol, .q-text-body ul, .explanation-box ol, .explanation-box ul, .feedback-body ol, .feedback-body ul {
-            margin: 8px 0 8px 24px;
-            padding-left: 18px;
-        }
-        .q-text-body li, .explanation-box li, .feedback-body li {
-            margin: 4px 0;
-        }
-        .latex-centered {
-            text-align: center;
         }
     </style>
 </head>
@@ -439,7 +446,7 @@
                 </div>
             </div>
 
-            <div class="q-text-body">
+            <div class="q-text-body latex-content">
                 {{ sub.question.question_text|safe }}
             </div>
 
@@ -463,7 +470,7 @@
                                 {% elif forloop.counter == 3 %}C
                                 {% elif forloop.counter == 4 %}D{% endif %}
                             </div>
-                            <span style="flex: 1;">{{ opt.value }}</span>
+                            <span class="latex-option-value latex-content" style="flex: 1;">{{ opt.value }}</span>
                             {% if opt.is_correct and opt.is_selected %}
                                 <span class="opt-status-tag tag-green">Your Choice (Correct)</span>
                             {% elif opt.is_correct %}
@@ -484,7 +491,7 @@
                         </svg>
                         <span>Explanation</span>
                     </h4>
-                    <div>{{ sub.question.explanation|safe }}</div>
+                    <div class="latex-explanation latex-content">{{ sub.question.explanation|safe }}</div>
                 </div>
             {% endif %}
         </article>
@@ -554,22 +561,24 @@
 
 </div>
 
+
     <script>
         /* ========================================================
-           LATEX -> HTML PREPROCESSING
+           QUESTION / OPTION LATEX -> HTML PREPROCESSING
            --------------------------------------------------------
-           Keep result-page rendering consistent with exam.html.
+           Keep the result page consistent with the exam page.
 
-           Supports:
-             \textbf{...} -> <strong>...</strong>
-             \textit{...} -> <em>...</em>
-             \underline{...} -> <u>...</u>
-             \begin{enumerate} ... \end{enumerate} -> <ol>...</ol>
-             \begin{itemize} ... \end{itemize} -> <ul>...</ul>
-             \begin{center} ... \end{center} -> centered HTML
+           Supported text/document commands:
+             \textbf{...}      -> <strong>...</strong>
+             \textit{...}      -> <em>...</em>
+             \underline{...}   -> <u>...</u>
+             \begin{enumerate} -> <ol>...</ol>
+             \begin{itemize}  -> <ul>...</ul>
+             \begin{center}   -> centered HTML
 
-           Mathematical expressions inside \(...\) and \[...\]
-           remain available for MathJax.
+           Existing \(...\) and \[...\] math is left for MathJax.
+           Bare mathematical option text such as \displaystyle ... is
+           wrapped in inline math so it is rendered as mathematics too.
            ======================================================== */
 
         function replaceBalancedLatexCommand(source, command, tag) {
@@ -652,7 +661,7 @@
             );
 
             source = source.replace(displayPattern, function(match, body) {
-                return `<div class="latex-centered">${body.trim()}</div>`;
+                return `<div class="latex-center">${body.trim()}</div>`;
             });
 
             const barePattern = new RegExp(
@@ -661,10 +670,24 @@
             );
 
             source = source.replace(barePattern, function(match, body) {
-                return `<div class="latex-centered">${body.trim()}</div>`;
+                return `<div class="latex-center">${body.trim()}</div>`;
             });
 
             return source;
+        }
+
+        function looksLikeBareMath(source) {
+            const stripped = source
+                .replace(/<[^>]*>/g, "")
+                .replace(/&nbsp;/gi, " ")
+                .trim();
+
+            if (!stripped) return false;
+            if (stripped.includes("\\(") || stripped.includes("\\[") || stripped.includes("\\begin{")) {
+                return false;
+            }
+
+            return /\\(?:displaystyle|textstyle|frac|sqrt|forall|exists|neg|land|lor|rightarrow|left|right|quad|geq|leq|neq|in|subset|subseteq|cup|cap|sum|prod|mathbb|mathbf|mathrm|sin|cos|tan|log|ln)\b/.test(stripped);
         }
 
         function preprocessLatexElement(element) {
@@ -678,24 +701,24 @@
             html = replaceBalancedLatexCommand(html, "textit", "em");
             html = replaceBalancedLatexCommand(html, "underline", "u");
 
+            if (looksLikeBareMath(html)) {
+                html = `\\(${html.trim()}\\)`;
+            }
+
             element.innerHTML = html;
         }
 
         function preprocessResultLatex() {
             document
-                .querySelectorAll(
-                    ".q-text-body, .opt-row, .explanation-box, .feedback-body"
-                )
+                .querySelectorAll(".latex-content")
                 .forEach(preprocessLatexElement);
         }
 
         function typesetResultMath() {
-            if (
-                window.MathJax &&
-                typeof MathJax.typesetPromise === "function"
-            ) {
-                MathJax.typesetPromise();
+            if (window.MathJax && typeof MathJax.typesetPromise === "function") {
+                return MathJax.typesetPromise();
             }
+            return Promise.resolve();
         }
 
         window.addEventListener("load", function() {
@@ -704,19 +727,18 @@
         });
 
         function printScorecard() {
-            if (window.MathJax && typeof MathJax.typesetPromise === "function") {
-                MathJax.typesetPromise().then(function() {
-                    window.print();
-                });
-            } else {
+            typesetResultMath().then(function() {
                 window.print();
-            }
+            });
         }
 
         function downloadScorecardPDF() {
-            printScorecard();
+            typesetResultMath().then(function() {
+                window.print();
+            });
         }
     </script>
+
 
 </body>
 </html>
