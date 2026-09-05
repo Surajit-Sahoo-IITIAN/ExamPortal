@@ -15,6 +15,9 @@
             tex: {
                 inlineMath: [['\\(', '\\)']],
                 displayMath: [['\\[', '\\]']]
+            },
+            startup: {
+                typeset: false
             }
         };
     </script>
@@ -569,20 +572,20 @@
         /* ========================================================
            RESULT-PAGE LATEX PREPROCESSING
 
-           The exam page and result page must interpret the same
-           authoring syntax before MathJax typesets the page.
+           IMPORTANT:
+           MathJax automatic typesetting is disabled above.
+           We first convert LaTeX text environments to HTML,
+           then explicitly ask MathJax to typeset the result.
 
-           Supported:
-             \textbf{...}       -> <strong>...</strong>
-             \textit{...}       -> <em>...</em>
-             \underline{...}    -> <u>...</u>
-             \begin{enumerate}  -> <ol>...</ol>
-             \begin{itemize}    -> <ul>...</ul>
-             \begin{center}     -> centered HTML
+           Supported text commands:
+             \textbf{...}
+             \textit{...}
+             \underline{...}
 
-           Existing \(...\) and \[...\] are left for MathJax.
-           Bare mathematical option text is wrapped in \(...\)
-           because MCQ options may be stored without delimiters.
+           Supported environments:
+             \begin{enumerate} ... \end{enumerate}
+             \begin{itemize}   ... \end{itemize}
+             \begin{center}    ... \end{center}
            ======================================================== */
 
         function replaceBalancedLatexCommand(source, command, tag) {
@@ -605,8 +608,11 @@
                 let i = contentStart;
 
                 while (i < source.length && depth > 0) {
-                    if (source[i] === "{") depth++;
-                    else if (source[i] === "}") depth--;
+                    if (source[i] === "{") {
+                        depth++;
+                    } else if (source[i] === "}") {
+                        depth--;
+                    }
                     i++;
                 }
 
@@ -616,6 +622,7 @@
                 }
 
                 const content = source.slice(contentStart, i - 1);
+
                 result += `<${tag}>${content}</${tag}>`;
                 position = i;
             }
@@ -623,9 +630,12 @@
             return result;
         }
 
+
         function latexListToHtml(body, htmlTag) {
+            const itemPattern =
+                /\\item(?:\s|&nbsp;)+([\s\S]*?)(?=\\item(?:\s|&nbsp;)+|$)/g;
+
             const items = [];
-            const itemPattern = /\\item(?:\s+|&nbsp;)([\s\S]*?)(?=\\item(?:\s+|&nbsp;)|$)/g;
             let match;
 
             while ((match = itemPattern.exec(body)) !== null) {
@@ -639,49 +649,103 @@
             return `<${htmlTag}>${items.join("")}</${htmlTag}>`;
         }
 
-        function replaceLatexListEnvironment(source, environment, htmlTag) {
+
+        function replaceLatexEnvironment(
+            source,
+            environment,
+            htmlTag
+        ) {
+            const escapedEnvironment =
+                environment.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+            /*
+             * Handle:
+             *
+             * \[
+             * \begin{enumerate}
+             * ...
+             * \end{enumerate}
+             * \]
+             *
+             * BEFORE handling the bare environment.
+             */
             const displayPattern = new RegExp(
-                String.raw`\\\[\s*\\begin\{${environment}\}([\s\S]*?)\\end\{${environment}\}\s*\\\]`,
+                String.raw`\\\[\s*\\begin\{${escapedEnvironment}\}([\s\S]*?)\\end\{${escapedEnvironment}\}\s*\\\]`,
                 "g"
             );
 
-            source = source.replace(displayPattern, function(match, body) {
-                return latexListToHtml(body, htmlTag) || match;
-            });
+            source = source.replace(
+                displayPattern,
+                function(match, body) {
+                    return latexListToHtml(body, htmlTag) || match;
+                }
+            );
 
+
+            /* Handle the normal:
+             *
+             * \begin{enumerate}
+             * ...
+             * \end{enumerate}
+             */
             const barePattern = new RegExp(
-                String.raw`\\begin\{${environment}\}([\s\S]*?)\\end\{${environment}\}`,
+                String.raw`\\begin\{${escapedEnvironment}\}([\s\S]*?)\\end\{${escapedEnvironment}\}`,
                 "g"
             );
 
-            source = source.replace(barePattern, function(match, body) {
-                return latexListToHtml(body, htmlTag) || match;
-            });
+            source = source.replace(
+                barePattern,
+                function(match, body) {
+                    return latexListToHtml(body, htmlTag) || match;
+                }
+            );
 
             return source;
         }
 
-        function replaceLatexCenterEnvironment(source) {
+
+        function replaceCenterEnvironment(source) {
+
+            /*
+             * \[
+             * \begin{center}
+             * ...
+             * \end{center}
+             * \]
+             */
             const displayPattern = new RegExp(
                 String.raw`\\\[\s*\\begin\{center\}([\s\S]*?)\\end\{center\}\s*\\\]`,
                 "g"
             );
 
-            source = source.replace(displayPattern, function(match, body) {
-                return `<div class="latex-center">${body.trim()}</div>`;
-            });
+            source = source.replace(
+                displayPattern,
+                function(match, body) {
+                    return (
+                        `<div class="latex-center">${body.trim()}</div>`
+                    );
+                }
+            );
 
+
+            /* Normal \begin{center} ... \end{center} */
             const barePattern = new RegExp(
                 String.raw`\\begin\{center\}([\s\S]*?)\\end\{center\}`,
                 "g"
             );
 
-            source = source.replace(barePattern, function(match, body) {
-                return `<div class="latex-center">${body.trim()}</div>`;
-            });
+            source = source.replace(
+                barePattern,
+                function(match, body) {
+                    return (
+                        `<div class="latex-center">${body.trim()}</div>`
+                    );
+                }
+            );
 
             return source;
         }
+
 
         function containsBareMath(source) {
             const stripped = source
@@ -693,16 +757,23 @@
                 return false;
             }
 
-            if (stripped.includes("\\(") || stripped.includes("\\[") || stripped.includes("\\begin{")) {
+            /*
+             * Already explicitly delimited or already converted.
+             */
+            if (
+                stripped.includes("\\(") ||
+                stripped.includes("\\[") ||
+                stripped.includes("\\begin{")
+            ) {
                 return false;
             }
 
             /*
-             * MCQ options are often stored as raw LaTeX such as
-             *   m=5, and 2^k>k^2 \\Rightarrow ...
-             * without \(...\).  In an option this whole string is
-             * mathematical content, so typeset it as one inline
-             * MathJax expression.
+             * MCQ options can contain raw mathematical LaTeX
+             * without \(...\), for example:
+             *
+             * m=5, and 2^k>k^2 \Rightarrow
+             * 2^{k+1}>(k+1)^2,\qquad k\geq5.
              */
             return (
                 /\\[A-Za-z]+/.test(stripped) ||
@@ -711,21 +782,66 @@
             );
         }
 
+
         function preprocessLatexElement(element) {
-            let html = element.innerHTML;
-
-            html = replaceLatexListEnvironment(html, "enumerate", "ol");
-            html = replaceLatexListEnvironment(html, "itemize", "ul");
-            html = replaceLatexCenterEnvironment(html);
-
-            html = replaceBalancedLatexCommand(html, "textbf", "strong");
-            html = replaceBalancedLatexCommand(html, "textit", "em");
-            html = replaceBalancedLatexCommand(html, "underline", "u");
 
             /*
-             * Only option values are allowed to use the whole-string
-             * bare-math fallback.  Question/explanation paragraphs may
-             * legitimately contain ordinary English alongside LaTeX.
+             * Prevent us from modifying MathJax-generated DOM
+             * again when Print/PDF is clicked.
+             */
+            if (
+                element.dataset &&
+                element.dataset.latexProcessed === "1"
+            ) {
+                return;
+            }
+
+            let html = element.innerHTML;
+
+            /*
+             * Convert document-level environments FIRST.
+             * This prevents MathJax from ever seeing
+             * \begin{enumerate} or \begin{center}.
+             */
+            html = replaceLatexEnvironment(
+                html,
+                "enumerate",
+                "ol"
+            );
+
+            html = replaceLatexEnvironment(
+                html,
+                "itemize",
+                "ul"
+            );
+
+            html = replaceCenterEnvironment(html);
+
+
+            /*
+             * Convert text-formatting commands.
+             */
+            html = replaceBalancedLatexCommand(
+                html,
+                "textbf",
+                "strong"
+            );
+
+            html = replaceBalancedLatexCommand(
+                html,
+                "textit",
+                "em"
+            );
+
+            html = replaceBalancedLatexCommand(
+                html,
+                "underline",
+                "u"
+            );
+
+
+            /*
+             * Bare-math fallback is ONLY for option values.
              */
             if (
                 element.classList.contains("latex-option-value") &&
@@ -735,7 +851,9 @@
             }
 
             element.innerHTML = html;
+            element.dataset.latexProcessed = "1";
         }
+
 
         function preprocessResultLatex() {
             document
@@ -743,44 +861,74 @@
                 .forEach(preprocessLatexElement);
         }
 
+
         function typesetResultMath() {
-            if (window.MathJax && typeof MathJax.typesetPromise === "function") {
-                return MathJax.typesetPromise();
+            if (
+                window.MathJax &&
+                MathJax.startup &&
+                MathJax.startup.promise
+            ) {
+                return MathJax.startup.promise.then(
+                    function() {
+                        if (
+                            typeof MathJax.typesetPromise ===
+                            "function"
+                        ) {
+                            return MathJax.typesetPromise();
+                        }
+                    }
+                );
             }
+
             return Promise.resolve();
         }
 
-        /*
-         * Perform preprocessing BEFORE MathJax's normal page typesetting.
-         */
-        window.addEventListener("DOMContentLoaded", function() {
-            preprocessResultLatex();
 
-            if (window.MathJax && MathJax.startup) {
-                MathJax.startup.promise.then(function() {
-                    return MathJax.typesetPromise();
-                });
+        /*
+         * MathJax automatic typesetting is disabled.
+         * Therefore preprocessing happens FIRST.
+         */
+        window.addEventListener(
+            "DOMContentLoaded",
+            function() {
+                preprocessResultLatex();
+                typesetResultMath();
             }
-        });
+        );
+
 
         function printScorecard() {
             preprocessResultLatex();
-            typesetResultMath().then(function() {
-                setTimeout(function() {
-                    window.print();
-                }, 100);
-            });
+
+            typesetResultMath().then(
+                function() {
+                    setTimeout(
+                        function() {
+                            window.print();
+                        },
+                        100
+                    );
+                }
+            );
         }
+
 
         function downloadScorecardPDF() {
             preprocessResultLatex();
-            typesetResultMath().then(function() {
-                setTimeout(function() {
-                    window.print();
-                }, 100);
-            });
+
+            typesetResultMath().then(
+                function() {
+                    setTimeout(
+                        function() {
+                            window.print();
+                        },
+                        100
+                    );
+                }
+            );
         }
     </script>
+
 
 
 </body>
