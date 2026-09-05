@@ -1024,12 +1024,6 @@ def result_view(request, exam_id):
 
             continue
 
-        if not submission.is_evaluated:
-
-            pending_count += 1
-
-            continue
-
         if (
             submission.marks_obtained
             == submission.question.marks
@@ -1037,9 +1031,15 @@ def result_view(request, exam_id):
 
             correct_count += 1
 
-        else:
+            continue
 
-            incorrect_count += 1
+        if not submission.is_evaluated:
+
+            pending_count += 1
+
+            continue
+
+        incorrect_count += 1
 
     # ========================================================
     # ATTEMPTED
