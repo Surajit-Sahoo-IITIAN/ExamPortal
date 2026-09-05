@@ -1183,13 +1183,100 @@ def result_view(request, exam_id):
 
     # ========================================================
     # INSTRUCTOR FEEDBACK
+    # Based on the student's percentage
     # ========================================================
 
-    instructor_feedback = getattr(
-        exam,
-        "instructor_feedback",
-        ""
-    )
+    if percentage >= 90:
+
+        instructor_feedback = (
+            "Good work! You have demonstrated a "
+            "strong understanding of the concepts "
+            "covered in this assessment."
+            "<br><br>"
+            "<strong>Suggestions for Improvement:</strong>"
+            "<ul>"
+            "<li>Continue practicing challenging and "
+            "application-based problems.</li>"
+            "<li>Focus on maintaining accuracy while "
+            "working under time pressure.</li>"
+            "<li>Try higher-order problems to further "
+            "strengthen your understanding.</li>"
+            "</ul>"
+        )
+
+    elif percentage >= 75:
+
+        instructor_feedback = (
+            "Very good attempt! You have a solid "
+            "understanding of most of the concepts "
+            "covered in this assessment."
+            "<br><br>"
+            "<strong>Suggestions for Improvement:</strong>"
+            "<ul>"
+            "<li>Review the questions you answered "
+            "incorrectly.</li>"
+            "<li>Identify the concepts behind those "
+            "mistakes and revise them carefully.</li>"
+            "<li>Practice similar problems to improve "
+            "consistency and accuracy.</li>"
+            "</ul>"
+        )
+
+    elif percentage >= 60:
+
+        instructor_feedback = (
+            "Good attempt! You have understood many "
+            "of the key concepts, but there is still "
+            "room for improvement."
+            "<br><br>"
+            "<strong>Suggestions for Improvement:</strong>"
+            "<ul>"
+            "<li>Review incorrect and unanswered "
+            "questions carefully.</li>"
+            "<li>Strengthen the concepts where you "
+            "made mistakes.</li>"
+            "<li>Practice more multi-step and "
+            "reasoning-based problems.</li>"
+            "</ul>"
+        )
+
+    elif percentage >= 40:
+
+        instructor_feedback = (
+            "You have made a reasonable start, but "
+            "several concepts need further "
+            "strengthening."
+            "<br><br>"
+            "<strong>Suggestions for Improvement:</strong>"
+            "<ul>"
+            "<li>Revisit the fundamental concepts "
+            "covered in this assessment.</li>"
+            "<li>Work through the questions you found "
+            "difficult and understand your mistakes.</li>"
+            "<li>Practice basic problems before moving "
+            "to more advanced questions.</li>"
+            "</ul>"
+        )
+
+    else:
+
+        instructor_feedback = (
+            "More preparation is needed to build a "
+            "strong foundation in the assessed "
+            "concepts."
+            "<br><br>"
+            "<strong>Suggestions for Improvement:</strong>"
+            "<ul>"
+            "<li>Revisit the fundamental concepts "
+            "from the beginning.</li>"
+            "<li>Practice simpler problems "
+            "systematically.</li>"
+            "<li>Focus on understanding the method "
+            "rather than memorizing answers.</li>"
+            "<li>Gradually move to more challenging "
+            "problems after strengthening the basics.</li>"
+            "</ul>"
+        )
 
     # ========================================================
     # RENDER
