@@ -168,8 +168,13 @@
             color: var(--primary);
         }
 
-        .timer-badge.warning svg { color: var(--warning); }
-        .timer-badge.danger svg { color: var(--danger); }
+        .timer-badge.warning svg {
+            color: var(--warning);
+        }
+
+        .timer-badge.danger svg {
+            color: var(--danger);
+        }
 
         .timer-text {
             font-family: 'JetBrains Mono', monospace;
@@ -428,8 +433,13 @@
             border-radius: 50%;
         }
 
-        .ind-answered { background: var(--primary); }
-        .ind-pending { background: #cbd5e1; }
+        .ind-answered {
+            background: var(--primary);
+        }
+
+        .ind-pending {
+            background: #cbd5e1;
+        }
 
         .palette-buttons-grid {
             display: grid;
@@ -564,8 +574,13 @@
         }
 
         @keyframes modal-fade {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .modal-box {
@@ -633,402 +648,1283 @@
         }
 
         @media (max-width: 992px) {
-            .exam-workspace { grid-template-columns: 1fr; }
-            .sidebar-palette-card { display: none; }
-            .mobile-bottom-actions { display: block; }
-            .exam-info h1 { max-width: 200px; font-size: 14.5px; }
-            .question-card { padding: 18px 16px; }
-            .option-choice { padding: 11px 12px; min-height: 48px; }
+            .exam-workspace {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-palette-card {
+                display: none;
+            }
+
+            .mobile-bottom-actions {
+                display: block;
+            }
+
+            .exam-info h1 {
+                max-width: 200px;
+                font-size: 14.5px;
+            }
+
+            .question-card {
+                padding: 18px 16px;
+            }
+
+            .option-choice {
+                padding: 11px 12px;
+                min-height: 48px;
+            }
         }
     </style>
 </head>
+
 <body>
 
 <!-- Navbar -->
 <header class="exam-navbar">
     <div class="navbar-inner">
+
         <div class="brand-meta">
+
             <div class="brand-badge">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
                 </svg>
             </div>
+
             <div class="exam-info">
                 <h1>{{ exam.title }}</h1>
                 <span>{{ questions|length }} Questions • {{ exam.total_marks }} Marks</span>
             </div>
+
         </div>
 
         <div class="timer-badge" id="timerBadge">
+
             <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
             </svg>
+
             <span class="timer-text" id="timerText">--:--</span>
+
         </div>
+
     </div>
 </header>
+
 
 <!-- Examination Workspace -->
 <main class="exam-workspace">
 
     <!-- Questions Form -->
     <form method="POST" id="examForm" class="questions-stream">
+
         {% csrf_token %}
 
         {% for question in questions %}
+
             <article class="question-card" id="q-card-{{ question.id }}">
+
                 <div class="q-header-row">
-                    <div class="q-tag-num">QUESTION {{ forloop.counter }}</div>
-                    <div class="q-meta-badges">
-                        <span class="q-type-pill">
-                            {% if question.question_type == "MCQ" %}Single Choice
-                            {% elif question.question_type == "MULTI" %}Multiple Choice
-                            {% else %}{{ question.question_type }}{% endif %}
-                        </span>
-                        <span class="q-marks-pill">+{{ question.marks }} Mark{% if question.marks > 1 %}s{% endif %}</span>
+
+                    <div class="q-tag-num">
+                        QUESTION {{ forloop.counter }}
                     </div>
+
+                    <div class="q-meta-badges">
+
+                        <span class="q-type-pill">
+
+                            {% if question.question_type == "MCQ" %}
+                                Single Choice
+                            {% elif question.question_type == "MULTI" %}
+                                Multiple Choice
+                            {% else %}
+                                {{ question.question_type }}
+                            {% endif %}
+
+                        </span>
+
+                        <span class="q-marks-pill">
+                            +{{ question.marks }}
+                            Mark{% if question.marks > 1 %}s{% endif %}
+                        </span>
+
+                    </div>
+
                 </div>
+
 
                 <div class="q-prompt-text">
                     {{ question.question_text|safe }}
                 </div>
 
+
                 {% if question.question_image %}
+
                     <div class="q-img-wrapper">
-                        <img src="{{ question.question_image.url }}" alt="Question Diagram">
+
+                        <img
+                            src="{{ question.question_image.url }}"
+                            alt="Question Diagram"
+                        >
+
                     </div>
+
                 {% endif %}
+
 
                 <!-- MCQ Options -->
                 {% if question.question_type == "MCQ" %}
+
                     <div class="options-list">
+
                         {% if question.option1 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-1">
-                                <input type="radio" name="question_{{ question.id }}" value="1" onchange="pickOption({{ question.id }}, '1')">
-                                <div class="option-letter-circle">A</div>
-                                <div class="option-text-val">{{ question.option1 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-1"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.id }}"
+                                    value="1"
+                                    onchange="pickOption({{ question.id }}, '1')"
+                                >
+
+                                <div class="option-letter-circle">
+                                    A
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option1 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option2 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-2">
-                                <input type="radio" name="question_{{ question.id }}" value="2" onchange="pickOption({{ question.id }}, '2')">
-                                <div class="option-letter-circle">B</div>
-                                <div class="option-text-val">{{ question.option2 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-2"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.id }}"
+                                    value="2"
+                                    onchange="pickOption({{ question.id }}, '2')"
+                                >
+
+                                <div class="option-letter-circle">
+                                    B
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option2 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option3 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-3">
-                                <input type="radio" name="question_{{ question.id }}" value="3" onchange="pickOption({{ question.id }}, '3')">
-                                <div class="option-letter-circle">C</div>
-                                <div class="option-text-val">{{ question.option3 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-3"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.id }}"
+                                    value="3"
+                                    onchange="pickOption({{ question.id }}, '3')"
+                                >
+
+                                <div class="option-letter-circle">
+                                    C
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option3 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option4 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-4">
-                                <input type="radio" name="question_{{ question.id }}" value="4" onchange="pickOption({{ question.id }}, '4')">
-                                <div class="option-letter-circle">D</div>
-                                <div class="option-text-val">{{ question.option4 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-4"
+                            >
+
+                                <input
+                                    type="radio"
+                                    name="question_{{ question.id }}"
+                                    value="4"
+                                    onchange="pickOption({{ question.id }}, '4')"
+                                >
+
+                                <div class="option-letter-circle">
+                                    D
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option4 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
                     </div>
-                    <button type="button" class="btn-clear" onclick="resetChoice({{ question.id }})">
-                        <svg style="width: 13px; height: 13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+
+
+                    <button
+                        type="button"
+                        class="btn-clear"
+                        onclick="resetChoice({{ question.id }})"
+                    >
+
+                        <svg
+                            style="width: 13px; height: 13px;"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+
                         </svg>
-                        <span>Clear response</span>
+
+                        <span>
+                            Clear response
+                        </span>
+
                     </button>
+
 
                 <!-- MULTI Options -->
                 {% elif question.question_type == "MULTI" %}
+
                     <div class="options-list">
+
                         {% if question.option1 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-1">
-                                <input type="checkbox" name="question_{{ question.id }}" value="1" onchange="pickMultiOption({{ question.id }})">
-                                <div class="option-letter-circle">A</div>
-                                <div class="option-text-val">{{ question.option1 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-1"
+                            >
+
+                                <input
+                                    type="checkbox"
+                                    name="question_{{ question.id }}"
+                                    value="1"
+                                    onchange="pickMultiOption({{ question.id }})"
+                                >
+
+                                <div class="option-letter-circle">
+                                    A
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option1 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option2 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-2">
-                                <input type="checkbox" name="question_{{ question.id }}" value="2" onchange="pickMultiOption({{ question.id }})">
-                                <div class="option-letter-circle">B</div>
-                                <div class="option-text-val">{{ question.option2 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-2"
+                            >
+
+                                <input
+                                    type="checkbox"
+                                    name="question_{{ question.id }}"
+                                    value="2"
+                                    onchange="pickMultiOption({{ question.id }})"
+                                >
+
+                                <div class="option-letter-circle">
+                                    B
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option2 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option3 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-3">
-                                <input type="checkbox" name="question_{{ question.id }}" value="3" onchange="pickMultiOption({{ question.id }})">
-                                <div class="option-letter-circle">C</div>
-                                <div class="option-text-val">{{ question.option3 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-3"
+                            >
+
+                                <input
+                                    type="checkbox"
+                                    name="question_{{ question.id }}"
+                                    value="3"
+                                    onchange="pickMultiOption({{ question.id }})"
+                                >
+
+                                <div class="option-letter-circle">
+                                    C
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option3 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
+
                         {% if question.option4 %}
-                            <label class="option-choice" id="opt-{{ question.id }}-4">
-                                <input type="checkbox" name="question_{{ question.id }}" value="4" onchange="pickMultiOption({{ question.id }})">
-                                <div class="option-letter-circle">D</div>
-                                <div class="option-text-val">{{ question.option4 }}</div>
+
+                            <label
+                                class="option-choice"
+                                id="opt-{{ question.id }}-4"
+                            >
+
+                                <input
+                                    type="checkbox"
+                                    name="question_{{ question.id }}"
+                                    value="4"
+                                    onchange="pickMultiOption({{ question.id }})"
+                                >
+
+                                <div class="option-letter-circle">
+                                    D
+                                </div>
+
+                                <div class="option-text-val">
+                                    {{ question.option4 }}
+                                </div>
+
                             </label>
+
                         {% endif %}
+
                     </div>
-                    <button type="button" class="btn-clear" onclick="resetChoice({{ question.id }})">
-                        <svg style="width: 13px; height: 13px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+
+
+                    <button
+                        type="button"
+                        class="btn-clear"
+                        onclick="resetChoice({{ question.id }})"
+                    >
+
+                        <svg
+                            style="width: 13px; height: 13px;"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 01-1 1v3M4 7h16"
+                            />
+
                         </svg>
-                        <span>Clear responses</span>
+
+                        <span>
+                            Clear responses
+                        </span>
+
                     </button>
+
                 {% endif %}
+
             </article>
+
         {% endfor %}
+
     </form>
+
 
     <!-- Sidebar Palette -->
     <aside class="sidebar-palette-card">
+
         <div class="palette-top">
-            <span class="palette-heading">Questions</span>
-            <span class="palette-stat-chip" id="answeredCount">0 / {{ questions|length }}</span>
+
+            <span class="palette-heading">
+                Questions
+            </span>
+
+            <span
+                class="palette-stat-chip"
+                id="answeredCount"
+            >
+                0 / {{ questions|length }}
+            </span>
+
         </div>
+
 
         <div class="palette-legend-row">
+
             <div class="legend-chip">
+
                 <div class="legend-indicator ind-answered"></div>
-                <span>Answered</span>
+
+                <span>
+                    Answered
+                </span>
+
             </div>
+
+
             <div class="legend-chip">
+
                 <div class="legend-indicator ind-pending"></div>
-                <span>Pending</span>
+
+                <span>
+                    Pending
+                </span>
+
             </div>
+
         </div>
+
 
         <div class="palette-buttons-grid">
+
             {% for question in questions %}
-                <button type="button" class="p-btn" id="pbtn-{{ question.id }}" onclick="scrollToQuestion({{ question.id }})">
+
+                <button
+                    type="button"
+                    class="p-btn"
+                    id="pbtn-{{ question.id }}"
+                    onclick="scrollToQuestion({{ question.id }})"
+                >
+
                     {{ forloop.counter }}
+
                 </button>
+
             {% endfor %}
+
         </div>
 
-        <button type="button" class="btn-finish-exam" onclick="openSubmitModal()">
-            <svg style="width: 17px; height: 17px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+
+        <button
+            type="button"
+            class="btn-finish-exam"
+            onclick="openSubmitModal()"
+        >
+
+            <svg
+                style="width: 17px; height: 17px;"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M5 13l4 4L19 7"
+                />
+
             </svg>
-            <span>Submit Exam</span>
+
+            <span>
+                Submit Exam
+            </span>
+
         </button>
+
     </aside>
 
 </main>
 
+
 <!-- Mobile Bottom Bar -->
 <div class="mobile-bottom-actions">
+
     <div class="mobile-bar-content">
-        <button type="button" class="btn-mob-jump" onclick="window.scrollTo({ top: 0, behavior: 'smooth' })">
-            <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+
+        <button
+            type="button"
+            class="btn-mob-jump"
+            onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        >
+
+            <svg
+                style="width: 15px; height: 15px;"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                />
+
             </svg>
-            <span id="mobileCountText">0 / {{ questions|length }} Done</span>
+
+            <span id="mobileCountText">
+                0 / {{ questions|length }} Done
+            </span>
+
         </button>
-        <button type="button" class="btn-mob-submit" onclick="openSubmitModal()">
-            <span>Submit Exam</span>
-            <svg style="width: 15px; height: 15px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+
+
+        <button
+            type="button"
+            class="btn-mob-submit"
+            onclick="openSubmitModal()"
+        >
+
+            <span>
+                Submit Exam
+            </span>
+
+            <svg
+                style="width: 15px; height: 15px;"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
+
             </svg>
+
         </button>
+
     </div>
+
 </div>
+
 
 <!-- Submit Confirmation Modal -->
 <div class="modal-overlay" id="submitModal">
+
     <div class="modal-box">
-        <div class="modal-icon-badge" style="background: var(--primary-light); color: var(--primary);">
-            <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+
+        <div
+            class="modal-icon-badge"
+            style="background: var(--primary-light); color: var(--primary);"
+        >
+
+            <svg
+                style="width: 24px; height: 24px;"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+            >
+
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+
             </svg>
+
         </div>
-        <h3>Submit Examination?</h3>
-        <p id="modalMsg">Are you sure you want to finalize your submission?</p>
+
+
+        <h3>
+            Submit Examination?
+        </h3>
+
+
+        <p id="modalMsg">
+            Are you sure you want to finalize your submission?
+        </p>
+
+
         <div class="modal-btn-row">
-            <button type="button" class="btn-modal-cancel" onclick="closeSubmitModal()">Review Questions</button>
-            <button type="button" class="btn-modal-submit-now" onclick="confirmSubmit()">Confirm & Submit</button>
+
+            <button
+                type="button"
+                class="btn-modal-cancel"
+                onclick="closeSubmitModal()"
+            >
+                Review Questions
+            </button>
+
+
+            <button
+                type="button"
+                class="btn-modal-submit-now"
+                onclick="confirmSubmit()"
+            >
+                Confirm & Submit
+            </button>
+
         </div>
+
     </div>
+
 </div>
 
+
 <script>
-    /* Selection Handlers */
+
+    /* ========================================================
+       SELECTION HANDLERS
+       ======================================================== */
+
     function pickOption(qId, val) {
-        const card = document.getElementById(`q-card-${qId}`);
-        const labels = card.querySelectorAll('.option-choice');
-        labels.forEach(l => l.classList.remove('selected'));
-        const activeLabel = document.getElementById(`opt-${qId}-${val}`);
-        if (activeLabel) activeLabel.classList.add('selected');
+
+        const card =
+            document.getElementById(`q-card-${qId}`);
+
+        const labels =
+            card.querySelectorAll('.option-choice');
+
+        labels.forEach(
+            l => l.classList.remove('selected')
+        );
+
+        const activeLabel =
+            document.getElementById(
+                `opt-${qId}-${val}`
+            );
+
+        if (activeLabel) {
+            activeLabel.classList.add('selected');
+        }
+
         refreshPalette(qId, true);
     }
 
+
     function pickMultiOption(qId) {
-        const card = document.getElementById(`q-card-${qId}`);
-        const checked = card.querySelectorAll('input:checked');
-        const labels = card.querySelectorAll('.option-choice');
+
+        const card =
+            document.getElementById(`q-card-${qId}`);
+
+        const checked =
+            card.querySelectorAll('input:checked');
+
+        const labels =
+            card.querySelectorAll('.option-choice');
+
         labels.forEach(l => {
-            const input = l.querySelector('input');
-            if (input && input.checked) l.classList.add('selected');
-            else l.classList.remove('selected');
+
+            const input =
+                l.querySelector('input');
+
+            if (input && input.checked) {
+                l.classList.add('selected');
+            } else {
+                l.classList.remove('selected');
+            }
+
         });
-        refreshPalette(qId, checked.length > 0);
+
+        refreshPalette(
+            qId,
+            checked.length > 0
+        );
     }
 
+
     function resetChoice(qId) {
-        const card = document.getElementById(`q-card-${qId}`);
-        const inputs = card.querySelectorAll('input');
-        inputs.forEach(i => i.checked = false);
-        const labels = card.querySelectorAll('.option-choice');
-        labels.forEach(l => l.classList.remove('selected'));
+
+        const card =
+            document.getElementById(`q-card-${qId}`);
+
+        const inputs =
+            card.querySelectorAll('input');
+
+        inputs.forEach(
+            i => i.checked = false
+        );
+
+        const labels =
+            card.querySelectorAll('.option-choice');
+
+        labels.forEach(
+            l => l.classList.remove('selected')
+        );
+
         refreshPalette(qId, false);
     }
 
+
     function refreshPalette(qId, isDone) {
-        const pBtn = document.getElementById(`pbtn-${qId}`);
+
+        const pBtn =
+            document.getElementById(
+                `pbtn-${qId}`
+            );
+
         if (pBtn) {
-            if (isDone) pBtn.classList.add('answered');
-            else pBtn.classList.remove('answered');
+
+            if (isDone) {
+                pBtn.classList.add('answered');
+            } else {
+                pBtn.classList.remove('answered');
+            }
+
         }
+
         recalculateTotals();
     }
 
+
     function recalculateTotals() {
-        const total = {{ questions|length }};
-        const done = document.querySelectorAll('.p-btn.answered').length;
-        const countBadge = document.getElementById('answeredCount');
-        if (countBadge) countBadge.innerText = `${done} / ${total}`;
-        const mobBadge = document.getElementById('mobileCountText');
-        if (mobBadge) mobBadge.innerText = `${done} / ${total} Done`;
+
+        const total =
+            {{ questions|length }};
+
+        const done =
+            document.querySelectorAll(
+                '.p-btn.answered'
+            ).length;
+
+        const countBadge =
+            document.getElementById(
+                'answeredCount'
+            );
+
+        if (countBadge) {
+            countBadge.innerText =
+                `${done} / ${total}`;
+        }
+
+        const mobBadge =
+            document.getElementById(
+                'mobileCountText'
+            );
+
+        if (mobBadge) {
+            mobBadge.innerText =
+                `${done} / ${total} Done`;
+        }
     }
+
 
     function scrollToQuestion(qId) {
-        const card = document.getElementById(`q-card-${qId}`);
-        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        const card =
+            document.getElementById(
+                `q-card-${qId}`
+            );
+
+        if (card) {
+
+            card.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+        }
     }
 
-    /* Modal */
+
+    /* ========================================================
+       SUBMIT MODAL
+       ======================================================== */
+
     function openSubmitModal() {
-        const total = {{ questions|length }};
-        const done = document.querySelectorAll('.p-btn.answered').length;
-        const unattempted = total - done;
-        const msg = document.getElementById('modalMsg');
+
+        const total =
+            {{ questions|length }};
+
+        const done =
+            document.querySelectorAll(
+                '.p-btn.answered'
+            ).length;
+
+        const unattempted =
+            total - done;
+
+        const msg =
+            document.getElementById(
+                'modalMsg'
+            );
+
         if (msg) {
-            msg.innerHTML = `You have answered <strong>${done}</strong> of <strong>${total}</strong> questions (${unattempted} remaining).<br>Would you like to finish and submit?`;
+
+            msg.innerHTML =
+                `You have answered <strong>${done}</strong> of <strong>${total}</strong> questions (${unattempted} remaining).<br>Would you like to finish and submit?`;
+
         }
-        document.getElementById('submitModal').style.display = 'flex';
+
+        document.getElementById(
+            'submitModal'
+        ).style.display = 'flex';
     }
+
 
     function closeSubmitModal() {
-        document.getElementById('submitModal').style.display = 'none';
+
+        document.getElementById(
+            'submitModal'
+        ).style.display = 'none';
     }
+
 
     function confirmSubmit() {
-        document.getElementById('examForm').submit();
+
+        document.getElementById(
+            'examForm'
+        ).submit();
     }
 
-    /* Countdown Timer */
-    const endTimeStr = "{{ exam_end_time }}";
-    const durationMinutes = {{ exam.duration|default:60 }};
-    const endTime = endTimeStr ? new Date(endTimeStr).getTime() : Date.now() + (durationMinutes * 60 * 1000);
+
+    /* ========================================================
+       COUNTDOWN TIMER
+       ======================================================== */
+
+    const endTimeStr =
+        "{{ exam_end_time }}";
+
+    const durationMinutes =
+        {{ exam.duration|default:60 }};
+
+    const endTime =
+        endTimeStr
+            ? new Date(endTimeStr).getTime()
+            : Date.now() +
+              (durationMinutes * 60 * 1000);
+
 
     function tickTimer() {
-        const now = Date.now();
-        const diff = Math.max(0, Math.floor((endTime - now) / 1000));
-        const badge = document.getElementById('timerBadge');
-        const text = document.getElementById('timerText');
+
+        const now =
+            Date.now();
+
+        const diff =
+            Math.max(
+                0,
+                Math.floor(
+                    (endTime - now) / 1000
+                )
+            );
+
+        const badge =
+            document.getElementById(
+                'timerBadge'
+            );
+
+        const text =
+            document.getElementById(
+                'timerText'
+            );
+
 
         if (diff <= 0) {
-            text.innerText = "00:00";
+
+            text.innerText =
+                "00:00";
+
             confirmSubmit();
+
             return;
         }
 
-        if (diff < 180) badge.className = "timer-badge danger";
-        else if (diff < 600) badge.className = "timer-badge warning";
 
-        const m = Math.floor(diff / 60);
-        const s = diff % 60;
-        text.innerText = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        if (diff < 180) {
+
+            badge.className =
+                "timer-badge danger";
+
+        }
+
+        else if (diff < 600) {
+
+            badge.className =
+                "timer-badge warning";
+
+        }
+
+
+        const m =
+            Math.floor(diff / 60);
+
+        const s =
+            diff % 60;
+
+
+        text.innerText =
+            `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     }
 
-    setInterval(tickTimer, 1000);
+
+    setInterval(
+        tickTimer,
+        1000
+    );
+
     tickTimer();
 
+
     /* ========================================================
-       ANTI-CHEAT: Multi-Event Detection
+       ANTI-CHEAT: CONTROLLED VISIBILITY DETECTION
+
+       Rule:
+       - Temporary browser/system UI interaction is ignored
+         if the page becomes visible again within 1.5 seconds.
+       - Leaving the examination page for more than 1.5 seconds
+         is treated as a violation.
+       - First violation -> warning.
+       - Second violation -> termination.
+
+       IMPORTANT:
+       We intentionally DO NOT use window.blur().
        ======================================================== */
+
     let violationInProgress = false;
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    let visibilityTimer = null;
+
+
+    const csrfToken =
+        document.querySelector(
+            '[name=csrfmiddlewaretoken]'
+        ).value;
+
 
     function reportViolation() {
-        if (violationInProgress) return;
+
+        if (violationInProgress) {
+            return;
+        }
+
         violationInProgress = true;
 
-        fetch("{% url 'exam_violation' exam.id %}", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": csrfToken,
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            credentials: "same-origin",
-            keepalive: true
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.action === 'warning') {
-                renderViolationDialog(data.message, false);
-                violationInProgress = false;
-            } else if (data.action === 'terminated') {
-                renderViolationDialog(data.message, true);
-            } else {
-                violationInProgress = false;
+
+        fetch(
+            "{% url 'exam_violation' exam.id %}",
+            {
+                method: "POST",
+
+                headers: {
+                    "X-CSRFToken": csrfToken,
+
+                    "Content-Type":
+                        "application/x-www-form-urlencoded"
+                },
+
+                credentials: "same-origin",
+
+                keepalive: true
             }
-        })
-        .catch(() => { violationInProgress = false; });
+        )
+
+        .then(
+            res => res.json()
+        )
+
+        .then(
+            data => {
+
+                if (data.action === 'warning') {
+
+                    renderViolationDialog(
+                        data.message,
+                        false
+                    );
+
+                    violationInProgress =
+                        false;
+
+                }
+
+                else if (
+                    data.action === 'terminated'
+                ) {
+
+                    renderViolationDialog(
+                        data.message,
+                        true
+                    );
+
+                }
+
+                else {
+
+                    violationInProgress =
+                        false;
+
+                }
+
+            }
+        )
+
+        .catch(
+            () => {
+
+                violationInProgress =
+                    false;
+
+            }
+        );
     }
 
-    document.addEventListener("visibilitychange", function() {
-        if (document.hidden) reportViolation();
-    });
 
-    window.addEventListener("blur", function() {
-        reportViolation();
-    });
+    /*
+     * Detect actual page visibility loss.
+     *
+     * We wait 1.5 seconds before reporting.
+     * If the student returns before 1.5 seconds,
+     * the event is ignored.
+     */
 
-    function renderViolationDialog(message, isTerminated) {
-        const modal = document.getElementById('submitModal');
-        const box = modal.querySelector('.modal-box');
-        if (isTerminated) {
-            box.innerHTML = `
-                <div class="modal-icon-badge" style="background: var(--danger-light); color: var(--danger);">
-                    <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-                    </svg>
-                </div>
-                <h3 style="color: var(--danger);">Examination Terminated</h3>
-                <p>${message}</p>
-                <div class="modal-btn-row">
-                    <a href="{% url 'logout' %}" class="btn-modal-submit-now" style="background: var(--danger); text-decoration: none; display: block; width: 100%;">Acknowledge & Exit</a>
-                </div>
-            `;
-            setTimeout(() => { document.getElementById('examForm').submit(); }, 2000);
-        } else {
-            box.innerHTML = `
-                <div class="modal-icon-badge" style="background: var(--warning-light); color: var(--warning);">
-                    <svg style="width: 24px; height: 24px;" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                </div>
-                <h3 style="color: #b45309;">⚠ Tab Switch Warning</h3>
-                <p>${message}</p>
-                <div class="modal-btn-row">
-                    <button type="button" class="btn-modal-submit-now" style="background: var(--warning); width: 100%;" onclick="document.getElementById('submitModal').style.display='none'">I Understand — Return to Exam</button>
-                </div>
-            `;
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+            if (document.hidden) {
+
+                if (
+                    visibilityTimer !== null
+                ) {
+
+                    clearTimeout(
+                        visibilityTimer
+                    );
+
+                }
+
+
+                visibilityTimer =
+                    setTimeout(
+                        function () {
+
+                            if (
+                                document.hidden &&
+                                !violationInProgress
+                            ) {
+
+                                reportViolation();
+
+                            }
+
+                        },
+                         60000
+                    );
+
+            }
+
+            else {
+
+                if (
+                    visibilityTimer !== null
+                ) {
+
+                    clearTimeout(
+                        visibilityTimer
+                    );
+
+                    visibilityTimer =
+                        null;
+                }
+
+            }
+
         }
-        modal.style.display = 'flex';
+    );
+
+
+    /* ========================================================
+       VIOLATION DIALOG
+       ======================================================== */
+
+    function renderViolationDialog(
+        message,
+        isTerminated
+    ) {
+
+        const modal =
+            document.getElementById(
+                'submitModal'
+            );
+
+        const box =
+            modal.querySelector(
+                '.modal-box'
+            );
+
+
+        if (isTerminated) {
+
+            box.innerHTML = `
+
+                <div
+                    class="modal-icon-badge"
+                    style="background: var(--danger-light); color: var(--danger);"
+                >
+
+                    <svg
+                        style="width: 24px; height: 24px;"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                        />
+
+                    </svg>
+
+                </div>
+
+
+                <h3 style="color: var(--danger);">
+                    Examination Terminated
+                </h3>
+
+
+                <p>
+                    ${message}
+                </p>
+
+
+                <div class="modal-btn-row">
+
+                    <a
+                        href="{% url 'logout' %}"
+                        class="btn-modal-submit-now"
+                        style="
+                            background: var(--danger);
+                            text-decoration: none;
+                            display: block;
+                            width: 100%;
+                        "
+                    >
+                        Acknowledge & Exit
+                    </a>
+
+                </div>
+            `;
+
+
+            setTimeout(
+                () => {
+                    document
+                        .getElementById(
+                            'examForm'
+                        )
+                        .submit();
+                },
+                2000
+            );
+
+        }
+
+        else {
+
+            box.innerHTML = `
+
+                <div
+                    class="modal-icon-badge"
+                    style="background: var(--warning-light); color: var(--warning);"
+                >
+
+                    <svg
+                        style="width: 24px; height: 24px;"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+
+                    </svg>
+
+                </div>
+
+
+                <h3 style="color: #b45309;">
+                    ⚠ Tab Switch Warning
+                </h3>
+
+
+                <p>
+                    ${message}
+                </p>
+
+
+                <div class="modal-btn-row">
+
+                    <button
+                        type="button"
+                        class="btn-modal-submit-now"
+                        style="
+                            background: var(--warning);
+                            width: 100%;
+                        "
+                        onclick="
+                            document.getElementById('submitModal').style.display='none'
+                        "
+                    >
+                        I Understand — Return to Exam
+                    </button>
+
+                </div>
+            `;
+
+        }
+
+
+        modal.style.display =
+            'flex';
     }
+
 </script>
 
 </body>
